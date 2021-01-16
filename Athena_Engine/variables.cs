@@ -4,16 +4,23 @@ using System.Text;
 
 namespace Athena_Engine
 {
-    public enum Types { 
-    
+    public enum Types {
+
         Variable,
         Operator,
-        Integer,
         Double
     }
 
     public enum Flags
     {
         Priority
+    }
+
+    public enum Operators
+    {
+        Addition,
+        Subtraction,
+        Division,
+        Multiplication
     }
 }
