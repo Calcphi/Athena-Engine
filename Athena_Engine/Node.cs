@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Athena_Engine
 {
-    class Node {
+    public class Node {
         public Types t; 
         public Flags f;
         public Node[] exp = new Node[2];
