@@ -8,12 +8,18 @@ namespace Console_tests
     {
         static void Main(string[] args)
         {
-            Tokenizer t = new Tokenizer();
-            List<Node> nodes = t.Tokenize("Ola+1");
-            foreach (Node n in nodes)
+            while (true)
             {
-                Console.WriteLine(n.t);
+                Console.Write("Equation:");
+                Tokenizer t = new Tokenizer();
+                List<Node> nodes = t.Tokenize(Console.ReadLine());
+                foreach (Node n in nodes)
+                {
+                    Console.WriteLine(n.t + " " + n.op + " " + n.value + " " + n.var + "\n" );
+                }
+                Console.WriteLine("\n");
             }
+
 
         }
     }
