@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Athena_Engine;
 
 namespace Console_tests
@@ -8,7 +9,11 @@ namespace Console_tests
         static void Main(string[] args)
         {
             Tokenizer t = new Tokenizer();
-            t.Tokenize("Ola+1");
+            List<Node> nodes = t.Tokenize("Ola+1");
+            foreach (Node n in nodes)
+            {
+                Console.WriteLine(n.t);
+            }
 
         }
     }
