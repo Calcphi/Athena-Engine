@@ -42,7 +42,8 @@ namespace Athena_Engine {
 					nv.t = Types.Variable;
 					nv.var = variable;
 					list_of_nodes.Add(nv);
-				}
+				} else if (Char.IsDigit())
+				
 			}
 		}
 	}

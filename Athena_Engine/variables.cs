@@ -8,7 +8,8 @@ namespace Athena_Engine
     
         Variable,
         Operator,
-        Number
+        Integer,
+        Double
     }
 
     public enum Flags
