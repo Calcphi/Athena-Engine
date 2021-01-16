@@ -9,5 +9,7 @@ namespace Athena_Engine
         public Flags f;
         public Node[] exp = new Node[2];
         public string var;
+        public double value;
+        public Operators op;
     }
 }
