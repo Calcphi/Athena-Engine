@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+
 
 //TODO: Make Operators
 
@@ -28,6 +30,7 @@ namespace Athena_Engine {
 				else if (Char.IsLetter(s[i])) //Check if current letter is a string and if it is creates a Node with it
                 {
 					string variable = s[i].ToString();
+					bool got_len = false;
 					for (int e = i + 1; e<= (s.Length - 1); e++) //Now get the rest of chars of the variable and get the next element to tokenize
                     {
 						if (Char.IsLetter(s[e]))
@@ -35,7 +38,8 @@ namespace Athena_Engine {
 							variable += s[e];
                         } else
                         {
-							len_to_jump = e - 1;
+							got_len = true;
+							len_to_jump = e - i - 1;
 							break;
                         }
                     }
@@ -44,6 +48,10 @@ namespace Athena_Engine {
 					nv.t = Types.Variable;
 					nv.var = variable;
 					list_of_nodes.Add(nv);
+					if (got_len == false)
+					{
+						break;
+					}
 				} 
 				else if (operators.Contains(s[i].ToString())){ //Check if current char is a valid operator
 					Node no = new Node();
@@ -64,7 +72,31 @@ namespace Athena_Engine {
 					}
 					list_of_nodes.Add(no);
                 }
-				
+				else if (Char.IsDigit(s[i])) { //NOTE: The first digit must start with a number not a . eg: 0.1 and not .1
+					string number = s[i].ToString();
+					bool got_len = false;
+					for (int e = i + 1; e <= (s.Length - 1); e++) //Now get the rest of chars of the variable and get the next element to tokenize
+					{
+						if (Char.IsDigit(s[e]) || s[e] == '.' )
+						{
+							number += s[e];
+						}
+						else
+						{
+							got_len = true;
+							len_to_jump = e - i - 1;
+							break;
+						}
+					}
+					Node nn = new Node();
+					nn.t = Types.Double;
+					nn.value = double.Parse(number, CultureInfo.InvariantCulture);
+					list_of_nodes.Add(nn);
+					if (got_len == false)
+                    {
+						break;
+                    }
+				}
 			}
 			return list_of_nodes;
 		}
