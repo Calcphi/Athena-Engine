@@ -8,3 +8,8 @@
 /Athena_Engine/bin/Debug/netstandard2.0
 /Console tests/bin/Release/netcoreapp3.1
 /Athena_Engine/bin/Release/netstandard2.0
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
