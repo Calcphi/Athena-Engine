@@ -13,6 +13,7 @@ namespace Athena_Engine
 
     public enum Flags
     {
+        None,
         Priority
     }
 
