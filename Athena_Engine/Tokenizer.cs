@@ -19,6 +19,7 @@ namespace Athena_Engine {
 		public List<Node> Tokenize(string s){
 
 			int len_to_jump = 0;
+			List<int> priority_operator = new List<int>();
 			List<Node> list_of_nodes = new List<Node>();
 			
 			for(int i = 0; i<=(s.Length - 1); i++) {
@@ -55,6 +56,11 @@ namespace Athena_Engine {
 				} 
 				else if (operators.Contains(s[i].ToString())){ //Check if current char is a valid operator
 					Node no = new Node();
+                    //Now we are going to check if the operator is given the priority flag
+                    if (priority_operator.Contains(i))
+                    {
+						no.f = Flags.Priority;
+                    }
 					no.t = Types.Operator;
 					switch (s[i].ToString()){ //Check what operator is it
 						case "+":
@@ -97,6 +103,26 @@ namespace Athena_Engine {
 						break;
                     }
 				}
+				else if (s[i] == '(') //Check for operators to give the priority flag
+                {
+					bool found_parentheses = false;
+					for (int e = i + 1; e <= (s.Length - 1); e++)
+                    {
+						List<char> operators = new List<char>() { '+', '-', '*', '/' }; //Add the length of the operators that need the priority flag
+						if (operators.Contains(s[e]))
+                        {
+							priority_operator.Add(e);
+                        } else if (s[e] == ')')
+                        {
+							found_parentheses = true;
+							break;
+                        }
+                    }
+					if (found_parentheses == false)
+                    {
+						throw new ArgumentException("There is one parentheses missing in this expression");
+                    }
+                }
 			}
 			return list_of_nodes;
 		}
