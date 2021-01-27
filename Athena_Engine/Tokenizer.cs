@@ -60,6 +60,16 @@ namespace Athena_Engine {
                     if (priority_operator.Contains(i))
                     {
 						no.f = Flags.Priority;
+						int p_level = 0;
+						foreach(int e in priority_operator)
+                        {
+                            if (i == e)
+                            {
+								p_level++;
+                            }
+                        }
+						no.priority_value = p_level;
+
                     }
 					no.t = Types.Operator;
 					switch (s[i].ToString()){ //Check what operator is it

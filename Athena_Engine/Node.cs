@@ -11,5 +11,6 @@ namespace Athena_Engine
         public string var;
         public double value;
         public Operators op;
+        public int priority_value;
     }
 }

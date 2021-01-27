@@ -35,8 +35,16 @@ namespace Athena_Engine
             }
             Node n2 = node_list[1];
             int op2 = GetOperationPriority(n2);
-
-            if (n1.f == Flags.Priority && n2.f == Flags.None) //conditions if one has a priority flag and the other doesn't
+            //if both have a priority level but they are different
+            if (n1.f == Flags.Priority && n2.f == Flags.Priority && n1.priority_value > n2.priority_value)
+            {
+                newlist.Remove(n1);
+            }
+            else if (n1.f == Flags.Priority && n2.f == Flags.Priority && n1.priority_value < n2.priority_value)
+            {
+                newlist.Remove(n2);
+            }
+            else if (n1.f == Flags.Priority && n2.f == Flags.None) //conditions if one has a priority flag and the other doesn't
             {
                 newlist.Remove(n1);
             }
