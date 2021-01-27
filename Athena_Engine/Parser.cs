@@ -21,6 +21,7 @@ namespace Athena_Engine
             //Now lets find the lowest priority operator
             int low_priority_index = 0;
             Node first_node = GetLowestPriorityNode(operator_list);
+            //now let's find the index to split the both lists
             return first_node;
         }
 

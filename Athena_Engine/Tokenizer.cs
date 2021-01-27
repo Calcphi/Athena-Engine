@@ -72,12 +72,23 @@ namespace Athena_Engine {
 
                     }
 					no.t = Types.Operator;
+					bool negative_number = false;
 					switch (s[i].ToString()){ //Check what operator is it
 						case "+":
 							no.op = Operators.Addition;
 							break;
 						case "-":
 							no.op = Operators.Subtraction;
+                            try
+                            {
+								if (operators.Contains(s[i - 1].ToString()) || s[i-1] == '(')
+								{
+									negative_number = true;
+								}
+							} catch (System.IndexOutOfRangeException)
+                            {
+								negative_number = true;
+                            }
 							break;
 						case "*":
 							no.op = Operators.Multiplication;
@@ -86,10 +97,35 @@ namespace Athena_Engine {
 							no.op = Operators.Division;
 							break;
 					}
-					list_of_nodes.Add(no);
+					if(negative_number == false)
+                    {
+						list_of_nodes.Add(no);
+					}
+					
                 }
-				else if (Char.IsDigit(s[i])) { //NOTE: The first digit must start with a number not a . eg: 0.1 and not .1
-					string number = s[i].ToString();
+				if (Char.IsDigit(s[i]) || s[i] == '-') { //NOTE: The first digit must start with a number not a . eg: 0.1 and not .1
+					string number = "";
+					if (s[i] == '-')
+                    {
+						try
+                        {
+							if (operators.Contains(s[i - 1].ToString()) || s[i - 1] == '(')
+							{
+								number = s[i].ToString();
+							} else {
+								continue; //continue because this - is an operator
+                            }
+						} catch(System.IndexOutOfRangeException)
+                        {
+							number = s[i].ToString();
+						}
+					}
+                    else
+                    {
+						number = s[i].ToString();
+					}
+
+					
 					bool got_len = false;
 					for (int e = i + 1; e <= (s.Length - 1); e++) //Now get the rest of chars of the variable and get the next element to tokenize
 					{
