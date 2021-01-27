@@ -23,11 +23,25 @@ namespace Console_tests
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
                 Node nf = p.Parse(nodes);
-                Console.WriteLine(nf.t + " " + nf.op + " " + nf.value + " " + nf.var + " " + nf.f + "\n");
+                PrintTree(nf, "", true);
                 Console.WriteLine("\n");
             }
 
 
+        }
+        public static void PrintTree(Node tree, String indent, bool last)
+        {
+            if(tree == null)
+            {
+                return;
+            }
+            Console.WriteLine(indent + "+- "+ tree.t + " " + tree.op + " " + tree.value + " " + tree.var + " " + tree.f + "\n");
+            indent += last ? "   " : "|  ";
+
+            for (int i = 0; i <= (tree.exp.Length - 1); i++)
+            {
+                PrintTree(tree.exp[i], indent, i == (tree.exp.Length - 1));
+            }
         }
     }
 }
