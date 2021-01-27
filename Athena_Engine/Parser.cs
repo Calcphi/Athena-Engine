@@ -9,19 +9,12 @@ namespace Athena_Engine
 
         public Node Parse(List<Node> nodes)
         {
-            List<Node> operator_list = new List<Node>(); //list to store the operators
-            List <int> operator_index = new List<int>(); //list to store the operators index
-            for (int i = 0; i <= (nodes.Count - 1); i++)//append all operators 
-            {
-                if (nodes[i].t == Types.Operator)
-                {
-                    operator_list.Add(nodes[i]);
-                }
-            }
+            List<Node> operator_list = GetOperationList(nodes);
             //Now lets find the lowest priority operator
-            int low_priority_index = 0;
             Node first_node = GetLowestPriorityNode(operator_list);
             //now let's find the index to split the both lists
+            (List<Node> node_list_left, List<Node> node_list_right) = SplitNodeList(nodes, first_node);
+
             return first_node;
         }
 
@@ -70,6 +63,46 @@ namespace Athena_Engine
                 newlist.Remove(n2);
             }
             return GetLowestPriorityNode(newlist);
+        }
+        public List<Node> GetOperationList(List<Node> nodes)
+        {
+            List<Node> operator_list = new List<Node>(); //list to store the operators
+            for (int i = 0; i <= (nodes.Count - 1); i++)//append all operators 
+            {
+                if (nodes[i].t == Types.Operator)
+                {
+                    operator_list.Add(nodes[i]);
+                }
+            }
+            return operator_list;
+        }
+
+        public (List<Node> list_split1, List<Node> list_split2) SplitNodeList(List<Node> nodes, Node first_node)
+        {
+            //First, let's find the low priority index
+            int low_priority_index = 0;
+            for (int i = 0; i <= (nodes.Count - 1); i++)
+            {
+                if (first_node == nodes[i])
+                {
+                    low_priority_index = i;
+                }
+            }
+            //Now we split them
+            List<Node> node_split1 = new List<Node>();
+            List<Node> node_split2 = new List<Node>();
+            for (int i = 0; i <= (nodes.Count - 1); i++)
+            {
+                if (i < low_priority_index)
+                {
+                    node_split1.Add(nodes[i]);
+                }
+                if (i > low_priority_index)
+                {
+                    node_split2.Add(nodes[i]);
+                }
+            }
+            return (node_split1, node_split2);
         }
 
         public int GetOperationPriority(Node n)
