@@ -15,7 +15,28 @@ namespace Athena_Engine
             //now let's find the index to split the both lists
             (List<Node> node_list_left, List<Node> node_list_right) = SplitNodeList(nodes, first_node);
 
+            first_node.exp[0] = ParseRecursion(node_list_left);
+            first_node.exp[1] = ParseRecursion(node_list_right);
+
             return first_node;
+        }
+
+        public Node ParseRecursion(List<Node> nodes)
+        {
+            if (nodes.Count == 1) {
+                return nodes[0];
+            }
+            List<Node> operator_list = GetOperationList(nodes);
+            //Now lets find the lowest priority operator
+            Node first_node = GetLowestPriorityNode(operator_list);
+            //now let's find the index to split the both lists
+            (List<Node> node_list_left, List<Node> node_list_right) = SplitNodeList(nodes, first_node);
+
+            first_node.exp[0] = ParseRecursion(node_list_left);
+            first_node.exp[1] = ParseRecursion(node_list_right);
+
+            return first_node;
+
         }
 
         public Node GetLowestPriorityNode(List<Node> node_list)
