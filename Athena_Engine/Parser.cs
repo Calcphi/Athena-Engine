@@ -9,6 +9,9 @@ namespace Athena_Engine
 
         public Node Parse(List<Node> nodes)
         {
+            if (nodes.Count == 1) {
+                return nodes[0];
+            }
             List<Node> operator_list = GetOperationList(nodes);
             //Now lets find the lowest priority operator
             Node first_node = GetLowestPriorityNode(operator_list);
@@ -43,6 +46,7 @@ namespace Athena_Engine
         {
             List<Node> newlist = node_list;
             Node n1 = node_list[0];
+            
             int op1 = GetOperationPriority(n1);
             if (node_list.Count == 1)
             {

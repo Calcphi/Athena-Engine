@@ -11,6 +11,10 @@ namespace Athena_Engine
 
         public double Solve(Node first_node)
         {
+            if(first_node.exp[0] == null && first_node.exp[1] == null)
+            {
+                return first_node.value;
+            }
             return Solver_Recursion(first_node);
         }
 
