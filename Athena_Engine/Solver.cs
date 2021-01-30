@@ -54,6 +54,10 @@ namespace Athena_Engine
                     result = n1 + n2;
                     break;
                 case Operators.Division:
+                    if (n2 == 0)
+                    {
+                        throw new DivideByZeroException("Stop dividing by zero, bitch.");
+                    }
                     result = n1 / n2;
                     break;
                 case Operators.Multiplication:
