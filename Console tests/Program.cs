@@ -13,6 +13,7 @@ namespace Console_tests
                 Console.Write("Equation:");
                 Tokenizer t = new Tokenizer();
                 Parser p = new Parser();
+                Solver s = new Solver();
                 List<Node> nodes = t.Tokenize(Console.ReadLine());
                 foreach (Node n in nodes)
                 {
@@ -25,6 +26,10 @@ namespace Console_tests
                 Node nf = p.Parse(nodes);
                 PrintTree(nf, "", true);
                 Console.WriteLine("\n");
+                Console.WriteLine("\n");
+                Console.WriteLine("\n");
+                Console.WriteLine(s.Solve(nf));
+
             }
 
 
