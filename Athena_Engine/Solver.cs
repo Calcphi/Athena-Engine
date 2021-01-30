@@ -44,7 +44,7 @@ namespace Athena_Engine
             } 
             double n1_fvalue = Solver_Recursion(n1);
             double n2_fvalue = Solver_Recursion(n2);
-            return Solve_Node(node.op, n2_fvalue, n2_fvalue);
+            return Solve_Node(node.op, n1_fvalue, n2_fvalue);
 
 
         }
