@@ -82,7 +82,18 @@ namespace Athena_Engine
                     {
                         throw new ArgumentException("0^0 is impossible, bitch");
                     }
-                    result = Math.Pow(n1, n2);
+                    else if (n1 < 0 && n2%2 == 0)
+                    {
+                        
+                        result = -Math.Pow(n1, n2);
+
+                    }
+                    else
+                    {
+
+                        result = Math.Pow(n1, n2);
+                    }
+
                     break;
             }
             return result;       
