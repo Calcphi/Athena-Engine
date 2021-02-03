@@ -10,8 +10,7 @@ namespace Athena_Engine {
 
 	public class Tokenizer
 	{
-
-		private List<string> operators = new List<string>(){ "+", "-", "*", "/" };
+		private List<string> operators = new List<string>(){ "+", "-", "*", "/", "^"};
 		public Tokenizer()
 		{
 		}
@@ -96,6 +95,9 @@ namespace Athena_Engine {
 							break;
 						case "/":
 							no.op = Operators.Division;
+							break;
+						case "^":
+							no.op = Operators.Exponent;
 							break;
 					}
 					if(negative_number == false)
