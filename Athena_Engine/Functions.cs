@@ -43,7 +43,7 @@ namespace Athena_Engine
         {
             //Now let's find the root_index
             string root_index = "";
-            if (Char.IsDigit(input[index + 4])){
+            if (Char.IsDigit(input[index + 4]) || input[index + 4] == '-'){
                 root_index += input[index + 4];
             } else
             {
@@ -65,6 +65,10 @@ namespace Athena_Engine
                     }
                     break;
                 }
+            }
+            if(root_index == "-")
+            {
+                throw new ArgumentException("There is no number after the minus signal.");
             }
             if (first_parenthesis == 0)
             {
