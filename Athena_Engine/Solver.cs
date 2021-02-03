@@ -78,6 +78,10 @@ namespace Athena_Engine
                     result = n1 - n2;
                     break;
                 case Operators.Exponent:
+                    if(n1 == 0 && n2 == 0)
+                    {
+                        throw new ArgumentException("0^0 is impossible, bitch");
+                    }
                     result = Math.Pow(n1, n2);
                     break;
             }
