@@ -77,6 +77,9 @@ namespace Athena_Engine
                 case Operators.Subtraction:
                     result = n1 - n2;
                     break;
+                case Operators.Exponent:
+                    result = Math.Pow(n1, n2);
+                    break;
             }
             return result;       
         }
