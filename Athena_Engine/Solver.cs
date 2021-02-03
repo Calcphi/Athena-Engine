@@ -65,7 +65,14 @@ namespace Athena_Engine
                     result = n1 / n2;
                     break;
                 case Operators.Multiplication:
-                    result = n1 * n2;
+                    if(n1 == 0 || n2 == 0)
+                    {
+                        result = 0;
+                    }
+                    else
+                    {
+                        result = n1 * n2;
+                    }
                     break;
                 case Operators.Subtraction:
                     result = n1 - n2;
