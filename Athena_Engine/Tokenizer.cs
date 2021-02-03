@@ -21,6 +21,7 @@ namespace Athena_Engine {
 			int len_to_jump = 0;
 			List<int> priority_operator = new List<int>();
 			List<Node> list_of_nodes = new List<Node>();
+			List<int> closed_parenthesis_used = new List<int>();
 			
 			for(int i = 0; i<=(s.Length - 1); i++) {
 				if (len_to_jump > 0)
@@ -160,8 +161,16 @@ namespace Athena_Engine {
 							priority_operator.Add(e);
                         } else if (s[e] == ')')
                         {
-							found_parentheses = true;
-							break;
+							if (closed_parenthesis_used.Contains(e))
+                            {
+								continue;
+                            } else
+                            {
+								found_parentheses = true;
+								closed_parenthesis_used.Add(e);
+								break;
+							}
+
                         }
                     }
 					if (found_parentheses == false)

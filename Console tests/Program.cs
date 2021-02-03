@@ -17,7 +17,7 @@ namespace Console_tests
                 List<Node> nodes = t.Tokenize(Console.ReadLine());
                 foreach (Node n in nodes)
                 {
-                    Console.WriteLine(n.t + " " + n.op + " " + n.value + " " + n.var + " " + n.f + "\n" );
+                    Console.WriteLine(n.t + " " + n.op + " " + n.value + " " + n.var + " " + n.f + " " + n.priority_value + "\n" );
                 }
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
