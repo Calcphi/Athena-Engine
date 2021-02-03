@@ -24,15 +24,28 @@ namespace Athena_Engine {
 		
 		private string SearchForFunctions(string input)
         {
-			foreach((string func, Func<string, int, string> a) in funct.functions)
+			foreach((string func, Func<string, int, string> thing) in funct.functions)
             {
-				//All functions should ONLY modify the the input string not create a new one
+				//All functions should ONLY modify the the input string
+				int index = 0;
+				while(input.IndexOf(func, index) != -1){
+
+					index = input.IndexOf(func, index);
+					input = thing(input, index);
+					if (index == input.IndexOf(func, index))
+                    {
+						index++;
+                    }
+					
+					
+
+				}
             }
 			return input;
         }
 
 		public List<Node> Tokenize(string s){
-
+			s = SearchForFunctions(s);
 			int len_to_jump = 0;
 			List<int> priority_operator = new List<int>();
 			List<Node> list_of_nodes = new List<Node>();
