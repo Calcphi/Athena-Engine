@@ -174,19 +174,24 @@ namespace Athena_Engine {
 					}
 					
 					Node nn = new Node();
-					if (s[i - 1] == '(' && s[i + len_to_jump + 1] == ')')
+					try {
+						if (s[i - 1] == '(' && s[i + len_to_jump + 1] == ')')
+						{
+							nn.f = Flags.Priority;
+							nn.priority_value = 1;
+						}
+					}
+					catch (IndexOutOfRangeException)
                     {
-						nn.f = Flags.Priority;
-						nn.priority_value = 1;
                     }
 					nn.t = Types.Double;
 					nn.value = double.Parse(number, CultureInfo.InvariantCulture);
 					list_of_nodes.Add(nn);
 					if (got_len == false)
-                    {
+					{
 						break;
-                    }
-				}
+					}
+					}
 				else if (s[i] == '(') //Check for operators to give the priority flag
                 {
 					bool found_parentheses = false;
