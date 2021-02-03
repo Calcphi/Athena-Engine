@@ -10,14 +10,42 @@ namespace Athena_Engine {
 
 	public class Tokenizer
 	{
+		private Functions funct = new Functions();
 
-		private List<string> operators = new List<string>(){ "+", "-", "*", "/" };
+		
+
+		private List<string> operators = new List<string>(){ "+", "-", "*", "/", "^"};
+
 		public Tokenizer()
 		{
+			
+
 		}
 		
-		public List<Node> Tokenize(string s){
+		private string SearchForFunctions(string input)
+        {
+			foreach((string func, Func<string, int, string> thing) in funct.functions)
+            {
+				//All functions should ONLY modify the the input string
+				int index = 0;
+				while(input.IndexOf(func, index) != -1){
 
+					index = input.IndexOf(func, index);
+					input = thing(input, index);
+					if (index == input.IndexOf(func, index))
+                    {
+						index++;
+                    }
+					
+					
+
+				}
+            }
+			return input;
+        }
+
+		public List<Node> Tokenize(string s){
+			s = SearchForFunctions(s);
 			int len_to_jump = 0;
 			List<int> priority_operator = new List<int>();
 			List<Node> list_of_nodes = new List<Node>();
@@ -97,6 +125,9 @@ namespace Athena_Engine {
 						case "/":
 							no.op = Operators.Division;
 							break;
+						case "^":
+							no.op = Operators.Exponent;
+							break;
 					}
 					if(negative_number == false)
                     {
@@ -141,7 +172,13 @@ namespace Athena_Engine {
 							break;
 						}
 					}
+					
 					Node nn = new Node();
+					if (s[i - 1] == '(' && s[i + len_to_jump + 1] == ')')
+                    {
+						nn.f = Flags.Priority;
+						nn.priority_value = 1;
+                    }
 					nn.t = Types.Double;
 					nn.value = double.Parse(number, CultureInfo.InvariantCulture);
 					list_of_nodes.Add(nn);
@@ -155,7 +192,7 @@ namespace Athena_Engine {
 					bool found_parentheses = false;
 					for (int e = i + 1; e <= (s.Length - 1); e++)
                     {
-						List<char> operators = new List<char>() { '+', '-', '*', '/' }; //Add the length of the operators that need the priority flag
+						List<char> operators = new List<char>() { '+', '-', '*', '/', '^' }; //Add the length of the operators that need the priority flag
 						if (operators.Contains(s[e]))
                         {
 							priority_operator.Add(e);

@@ -150,6 +150,9 @@ namespace Athena_Engine
                 case Operators.Division:
                     priority = 2;
                     break;
+                case Operators.Exponent:
+                    priority = 3;
+                    break;
             }
             return priority;
         }

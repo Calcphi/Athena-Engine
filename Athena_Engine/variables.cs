@@ -22,6 +22,7 @@ namespace Athena_Engine
         Addition,
         Subtraction,
         Division,
-        Multiplication
+        Multiplication,
+        Exponent
     }
 }

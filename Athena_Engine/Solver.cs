@@ -28,7 +28,7 @@ namespace Athena_Engine
             Node n2 = node.exp[1];
             if(n1.t != Types.Operator && n2.t != Types.Operator) //if both children of node are different than we can finally solve it
             {
-                return Solve_Node(node.op, n1.value, n2.value);
+                return Solve_Node(node.op, n1.value, n2.value, n1);
             }
             //Now we need to decide which one to continue to look for
             Node nf = Decider(n1, n2);
@@ -36,20 +36,20 @@ namespace Athena_Engine
             if (n1 == nf && n2.t != Types.Operator)
             {
                 double n1_cvalue = Solver_Recursion(n1);
-                return Solve_Node(node.op, n1_cvalue, n2.value);
+                return Solve_Node(node.op, n1_cvalue, n2.value, n1);
             } else if (n2 == nf && n1.t != Types.Operator)
             {
                 double n2_cvalue = Solver_Recursion(n2);
-                return Solve_Node(node.op, n1.value, n2_cvalue);
+                return Solve_Node(node.op, n1.value, n2_cvalue, n1);
             } 
             double n1_fvalue = Solver_Recursion(n1);
             double n2_fvalue = Solver_Recursion(n2);
-            return Solve_Node(node.op, n1_fvalue, n2_fvalue);
+            return Solve_Node(node.op, n1_fvalue, n2_fvalue, n1);
 
 
         }
 
-        private double Solve_Node(Operators o, double n1, double n2)
+        private double Solve_Node(Operators o, double n1, double n2, Node n1_n)
         {
             double result = 0;
             switch (o)
@@ -76,6 +76,24 @@ namespace Athena_Engine
                     break;
                 case Operators.Subtraction:
                     result = n1 - n2;
+                    break;
+                case Operators.Exponent:
+                    if(n1 == 0 && n2 == 0)
+                    {
+                        throw new ArgumentException("0^0 is impossible, bitch");
+                    }
+                    else if ((n1 < 0 && n2%2 == 0) && n1_n.priority_value == 0)
+                    {
+                        
+                        result = -Math.Pow(n1, n2);
+
+                    }
+                    else
+                    {
+
+                        result = Math.Pow(n1, n2);
+                    }
+
                     break;
             }
             return result;       
