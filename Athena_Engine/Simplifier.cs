@@ -19,7 +19,17 @@ namespace Athena_Engine
 
         public Node Simplify(Node origin)
         {
-            return SimplifyRecursion(origin);
+            Node old_simplify = SimplifyRecursion(origin);
+            while (true)
+            {
+                Node new_simplify = SimplifyRecursion(old_simplify);
+                old_simplify = new_simplify;
+                if (new_simplify == old_simplify)
+                {
+                    break;
+                }
+            }
+            return old_simplify;
         }
 
         public Node SimplifyRecursion(Node n)
