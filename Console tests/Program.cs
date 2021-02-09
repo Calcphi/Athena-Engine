@@ -8,12 +8,15 @@ namespace Console_tests
     {
         static void Main(string[] args)
         {
+            Tokenizer t = new Tokenizer();
+            Parser p = new Parser();
+            Solver s = new Solver();
+            Simplifier simp = new Simplifier(); //ha he's a simp
+            Console.Write("Solve equation (Y/n):");
+            string decision = Console.ReadLine();
             while (true)
             {
                 Console.Write("Equation:");
-                Tokenizer t = new Tokenizer();
-                Parser p = new Parser();
-                Solver s = new Solver();
                 List<Node> nodes = t.Tokenize(Console.ReadLine());
                 foreach (Node n in nodes)
                 {
@@ -28,7 +31,16 @@ namespace Console_tests
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
-                Console.WriteLine(s.Solve(nf));
+                if (decision == "Y" || decision == "y")
+                {
+                    Console.WriteLine(s.Solve(nf));
+                }
+                else
+                {
+                    Node origin_simp = simp.Simplify(nf);
+                    PrintTree(origin_simp, "", true);
+                }
+                
 
             }
 
