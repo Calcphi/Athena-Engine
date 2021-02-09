@@ -7,6 +7,7 @@ namespace Athena_Engine
     public class Simplifier
     {
         List<Func<Node, Node>> rules = new List<Func<Node, Node>>();
+        int depth = 0;
 
         public Simplifier(){
             Func<Node, Node> r1 = FirstRule;
@@ -56,12 +57,18 @@ namespace Athena_Engine
             {
                 return n;
             }
+            n.op = Operators.Addition;
             Node old_r = n.exp[1]; //get the old right node
             n.exp[1] = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 1 
             };
             old_r = IncrementPriorityValue(old_r);
             n.exp[1].exp[0] = new Node() { t = Types.Double, value = -1 };
             n.exp[1].exp[1] = old_r;
+            return n;
+        }
+
+        private Node SecondRule(Node n)
+        {
             return n;
         }
 
