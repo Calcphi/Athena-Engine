@@ -31,6 +31,10 @@ namespace Console_tests
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
+                Console.Write(OrganizeTree(nf));
+                Console.WriteLine("\n");
+                Console.WriteLine("\n");
+                Console.WriteLine("\n");
                 if (decision == "Y" || decision == "y")
                 {
                     Console.WriteLine(s.Solve(nf));
@@ -59,6 +63,80 @@ namespace Console_tests
             {
                 PrintTree(tree.exp[i], indent, i == (tree.exp.Length - 1));
             }
+        }
+        
+     
+        public static string OrganizeTree(Node n) //O Diogo é Rei e fez isto sozinho
+        {
+            string parcel = "";
+            switch (n.t)
+            {
+                case Types.Double:
+                    parcel = Convert.ToString(n.value);
+
+                    break;
+                case Types.Operator:
+
+                    switch (n.op)
+                    {
+
+                        case Operators.Addition:
+
+                            parcel = "+";
+                            break;
+                        case Operators.Subtraction:
+
+                            parcel = "-";
+                            break;
+                        case Operators.Multiplication:
+
+                            parcel = "*";
+                            break;
+                        case Operators.Division:
+
+                            parcel = "/";
+                            break;
+                        case Operators.Exponent:
+
+                            parcel = "^";
+                            break;
+
+                    }
+
+
+                    break;
+
+                case Types.Variable:
+                    parcel = Convert.ToString(n.var);
+
+                    break;
+
+
+
+
+
+
+            }
+
+            if (n.exp[0] == null && n.exp[1] == null)
+            {
+
+                return parcel;
+
+            }
+
+
+            string ParcelLeft = "";
+            string ParcelRight = "";
+
+            ParcelLeft = OrganizeTree(n.exp[0]);
+            ParcelRight = OrganizeTree(n.exp[1]);
+
+
+
+            string Equation = ParcelLeft + parcel + ParcelRight;
+
+            return Equation;
         }
     }
 }
