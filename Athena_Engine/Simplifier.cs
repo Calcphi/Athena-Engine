@@ -13,6 +13,8 @@ namespace Athena_Engine
             rules.Add(r1);
             Func<Node, Node> r2 = SecondRule;
             rules.Add(r2);
+            Func<Node, Node> r3 = ThirdRule;
+            rules.Add(r3);
         }
 
         public Node Simplify(Node origin)
@@ -88,6 +90,8 @@ namespace Athena_Engine
             }
             if (n.op == Operators.Multiplication && n.exp[1].op == Operators.Division) //check if current node is an multiplication and second operand is a division 
             {
+                //Check the image of the second rule at https://github.com/Calcphi/Athena-Engine/issues/7
+                //to understand it better
                 Node left_mp = n.exp[0];
                 left_mp = IncrementPriorityValue(left_mp);
 
@@ -106,6 +110,31 @@ namespace Athena_Engine
                 //Now we replace the denominator
                 n.exp[1] = right_div;
 
+            }
+            return n;
+        }
+
+        private Node ThirdRule(Node n)
+        {
+            if (n.op == Operators.Division && n.exp[0].op == Operators.Division)
+            {
+                //Check the image of the third rule at https://github.com/Calcphi/Athena-Engine/issues/7
+
+                Node div_num = DecrementPriorityValue(n.exp[0].exp[0]);
+
+                Node div_deno1 = n.exp[0].exp[1];
+                Node div_deno2 = IncrementPriorityValue(n.exp[1]);
+
+                //After getting all the node numerators and denominators, we apply the third rule
+
+                n.exp[0] = div_num; //replace by the numerator
+
+                n.exp[1] = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 1 };
+
+                n.exp[1].exp[0] = div_deno1; //replace the denominator
+                n.exp[1].exp[1] = div_deno2; //replace the denominator
+                
+                
             }
             return n;
         }
