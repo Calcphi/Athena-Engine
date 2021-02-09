@@ -7,16 +7,16 @@ namespace Athena_Engine
     public class Simplifier
     {
         List<Func<Node, Node>> rules = new List<Func<Node, Node>>();
-        int depth = 0;
 
         public Simplifier(){
             Func<Node, Node> r1 = FirstRule;
             rules.Add(r1);
+            Func<Node, Node> r2 = SecondRule;
+            rules.Add(r2);
         }
 
         public Node Simplify(Node origin)
         {
-            
             return SimplifyRecursion(origin);
         }
 
@@ -26,12 +26,12 @@ namespace Athena_Engine
             {
                 return n;
             }
+            n.exp[0] = SimplifyRecursion(n.exp[0]); //Then do recursion for the left one
+            n.exp[1] = SimplifyRecursion(n.exp[1]);// Recursion for the right one;
             foreach (Func<Node, Node> func in rules) //Apply every rule in the current node.
             {
                 n = func(n);
             }
-            n.exp[0] = SimplifyRecursion(n.exp[0]); //Then do recursion for the left one
-            n.exp[1] = SimplifyRecursion(n.exp[1]);// Recursion for the right one;
             return n;
 
 
@@ -50,6 +50,19 @@ namespace Athena_Engine
             return n;
         }
 
+        private Node DecrementPriorityValue(Node n)
+        {
+            if (n.t == Types.Operator || (n.t == Types.Double && n.priority_value > 0))
+            {
+                n.priority_value--;
+            }
+            else if (!(n.exp[0] == null || n.exp[1] == null)) //check if there are children
+            {
+                n.exp[0] = DecrementPriorityValue(n.exp[0]);
+                n.exp[1] = DecrementPriorityValue(n.exp[1]);
+            }
+            return n;
+        }
 
         private Node FirstRule(Node n)
         {
@@ -69,6 +82,31 @@ namespace Athena_Engine
 
         private Node SecondRule(Node n)
         {
+            if (n.exp[0] == null || n.exp[1] == null) //If there are no more children dont apply it.
+            {
+                return n;
+            }
+            if (n.op == Operators.Multiplication && n.exp[1].op == Operators.Division) //check if current node is an multiplication and second operand is a division 
+            {
+                Node left_mp = n.exp[0];
+                left_mp = IncrementPriorityValue(left_mp);
+
+                Node right_mp = n.exp[1].exp[0];
+                right_mp = IncrementPriorityValue(right_mp);
+
+                Node right_div = n.exp[1].exp[1];
+                right_div = DecrementPriorityValue(right_div);
+
+                n.op = Operators.Division; //change current operator
+                //The numerator will be a multiplication
+                n.exp[0] = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 1 };
+                n.exp[0].exp[0] = left_mp;
+                n.exp[0].exp[1] = right_mp;
+
+                //Now we replace the denominator
+                n.exp[1] = right_div;
+
+            }
             return n;
         }
 
