@@ -180,6 +180,7 @@ namespace Athena_Engine
                     //check if the children are exponents 
                     //Now we assume the the 4th rule is apllied and the variable is always on the left side of the simplification (have to create a rule for that)
                     //also we need to check if node is a variable in them
+                    
                     Node left_exponent_base = n.exp[0].exp[0];
                     Node left_exponent_exponent = n.exp[0].exp[1];
                     Node right_exponent_base = n.exp[1].exp[0];
@@ -190,18 +191,15 @@ namespace Athena_Engine
                         string var_name2 = right_exponent_base.exp[1].var;
                         if(var_name1 == var_name2)
                         {
+                            //We also assume that the coefient of this variable is 1, a new rule must be applied before
                             Node old_n = n;
-                            n = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = old_n.priority_value };
-                            n.exp[1] = new Node{ t = Types.Operator, op = Operators.Exponent, priority_value = old_n.priority_value++ }; //setting up exponent
-                            //We setup the coeficient side
-                            n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = old_n.priority_value++ };
-                            n.exp[0].exp[0] = left_exponent_base.exp[0];
-                            n.exp[0].exp[1] = right_exponent_base.exp[0];
+                            n = new Node{ t = Types.Operator, op = Operators.Exponent, priority_value = old_n.priority_value }; //setting up exponent
+
                             //Now we setup the exponent side
-                            n.exp[1].exp[0] = left_exponent_base.exp[1];
-                            n.exp[1].exp[1] = new Node { t = Types.Operator, op = Operators.Addition, priority_value = n.exp[1].priority_value + 2 };
-                            n.exp[1].exp[1].exp[0] = left_exponent_exponent;
-                            n.exp[1].exp[1].exp[1] = left_exponent_exponent;
+                            n.exp[0] = left_exponent_base.exp[1];
+                            n.exp[1] = new Node { t = Types.Operator, op = Operators.Addition, priority_value = n.priority_value + 1 };
+                            n.exp[1].exp[0] = left_exponent_exponent;
+                            n.exp[1].exp[1] = right_exponent_exponent;
                         }
                     }
                 }
