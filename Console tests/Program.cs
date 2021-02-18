@@ -44,6 +44,7 @@ namespace Console_tests
                 {
                     Node origin_simp = simp.Simplify(nf);
                     PrintTree(origin_simp, "", true);
+                    Console.WriteLine(OrganizeTree(origin_simp, origin_simp));
                 }
                 
 
