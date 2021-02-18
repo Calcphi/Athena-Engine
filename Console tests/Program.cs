@@ -6,6 +6,7 @@ namespace Console_tests
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             Tokenizer t = new Tokenizer();
@@ -31,7 +32,7 @@ namespace Console_tests
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
-                Console.Write(OrganizeTree(nf));
+                Console.Write(OrganizeTree(nf, nf));
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
@@ -66,14 +67,14 @@ namespace Console_tests
         }
         
      
-        public static string OrganizeTree(Node n) //O Diogo é Rei e fez isto sozinho
+        public static string OrganizeTree(Node n, Node previous_n) //O Diogo é Rei e fez isto sozinho
         {
             string parcel = "";
             switch (n.t)
             {
                 case Types.Double:
                     parcel = Convert.ToString(n.value);
-
+                    
                     break;
                 case Types.Operator:
 
@@ -103,19 +104,12 @@ namespace Console_tests
 
                     }
 
-
                     break;
 
                 case Types.Variable:
                     parcel = Convert.ToString(n.var);
 
                     break;
-
-
-
-
-
-
             }
 
             if (n.exp[0] == null && n.exp[1] == null)
@@ -129,12 +123,20 @@ namespace Console_tests
             string ParcelLeft = "";
             string ParcelRight = "";
 
-            ParcelLeft = OrganizeTree(n.exp[0]);
-            ParcelRight = OrganizeTree(n.exp[1]);
+            ParcelLeft = OrganizeTree(n.exp[0], n);
+            ParcelRight = OrganizeTree(n.exp[1], n);
 
+            string Equation = "";
 
-
-            string Equation = ParcelLeft + parcel + ParcelRight;
+            if (n.priority_value > previous_n.priority_value || (n == previous_n && n.priority_value == 1))
+            {
+                Equation = "(" +ParcelLeft + parcel + ParcelRight + ")";
+            }
+            else
+            {
+                Equation = ParcelLeft + parcel + ParcelRight;
+            }
+            
 
             return Equation;
         }
