@@ -7,6 +7,7 @@ namespace Athena_Engine
     public class Simplifier
     {
         List<Func<Node, Node, Node>> rules = new List<Func<Node, Node, Node>>();
+        Solver s = new Solver();
 
         public Simplifier(){
             Func<Node, Node, Node> r1 = FirstRule;
@@ -35,6 +36,8 @@ namespace Athena_Engine
                     break;
                 }
             }
+            old_simplify = SolveWherePossible(old_simplify);
+            //after simplifying the maximum we can solve parts of the equation that only have numbers between them
             return old_simplify;
         }
 
@@ -58,6 +61,33 @@ namespace Athena_Engine
             return n;
 
 
+        }
+        
+        public Node SolveWherePossible(Node n)
+        {
+            Node Solve(Node nn)
+            {
+                if (n.t == Types.Operator && (n.exp[0].t == Types.Double && n.exp[1].t == Types.Double))
+                {
+                    double value = s.Solve(n);
+                    n = new Node() { t = Types.Double, value = value, priority_value = n.priority_value };
+                    //it should inherit the priority value because of exponents, then it works always
+                }
+                return n;
+            }
+            if(n.exp[0] == null)
+            {
+                return n;
+            }
+            Node old_n = n;
+            n = Solve(n);
+            if (old_n == n){
+                n.exp[0] = SolveWherePossible(n.exp[0]);
+                n.exp[1] = SolveWherePossible(n.exp[1]);
+                //try to solve it again
+                n = Solve(n);
+            }
+            return n;
         }
 
         private Node IncrementPriorityValue(Node n)
@@ -228,7 +258,7 @@ namespace Athena_Engine
                         n.exp[1].exp[1] = exponent2;
                     }
                 }
-                // now we go to the 2nd case 2* x^2 * 3 * x^3
+                // now we go to the 2nd case 2* x^2 * 3 * x^3, where all have the same priority level
                 if (n.exp[0].op == Operators.Multiplication && n.exp[1].op == Operators.Exponent)
                 {
                     if(CheckForVariable(n.exp[0], 0, 3) == true && CheckForVariable(n.exp[1], 0, 2) == true)
