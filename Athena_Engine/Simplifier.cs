@@ -16,7 +16,9 @@ namespace Athena_Engine
             Func<Node, Node, Node> r3 = ThirdRule;
             rules.Add(r3);
             Func<Node, Node, Node> r4 = ForthRule;
-            rules.Add(r4);            
+            rules.Add(r4);
+            Func<Node, Node, Node> r45 = ForthHalfRule;
+            rules.Add(r45);
             Func<Node, Node, Node> r5 = FifthRule;
             rules.Add(r5);
         }
@@ -166,6 +168,84 @@ namespace Athena_Engine
                 n = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = prev_n.priority_value + 1 };
                 n.exp[0] = new Node { t = Types.Double, value = 1 };
                 n.exp[1] = old_n;
+            }
+            return n;
+        }
+
+        private bool CheckForVariable(Node n, int depth, int max_depth)
+        {
+            //ok after rule 4 all variables have an coeficient to the variable, this functions ONLY works after rule 4
+            //they can be in their (coef*variable) form;
+            if (depth > max_depth || n == null)
+            {
+                return false;
+            }
+            if (n.op == Operators.Multiplication && n.exp[1].t == Types.Variable) //variables are always on the right side
+            {
+                return true;
+            } else
+            {
+                bool t1 = CheckForVariable(n.exp[0], depth++, max_depth);
+                bool t2 = CheckForVariable(n.exp[1], depth++, max_depth);
+                return t1 || t2;
+
+            }
+
+        }
+
+        private Node ForthHalfRule(Node n, Node prev_n)
+        {
+            //Ok this rule is a precedent to rule five, because it's a problem if the equation has a coeficient, this is to detect that
+            //and seperate the coeficients before the fifth rule is applied. 2* x^2 * 3 * x^3 something like this
+            if (n.op == Operators.Multiplication)
+            {
+                if (n.exp[0] == null)
+                {
+                    return n;
+                }
+                //we have two cases both of the children are an multiplication or one children are an exponent and a multiplication.
+                // 1st (2* x^2) * (3 * x^3)
+                // 2nd 2* x^2 * 3 * x^3
+
+                //we do the first case first
+                if (n.exp[0].op == Operators.Multiplication && n.exp[1].op == Operators.Multiplication)
+                {
+                    //now we need to know if there is an variable on both children 
+                    //we use the checkforvariable function
+                    if (CheckForVariable(n.exp[0], 0, 2) == true && CheckForVariable(n.exp[1], 0, 2) == true)
+                    {
+                        Node coef1 = n.exp[0].exp[0]; // once again assuming that coeficients are on the left
+                        Node coef2 = n.exp[1].exp[0];
+                        Node exponent1 = n.exp[0].exp[1]; // assuming that exponents or variables are on the right
+                        Node exponent2 = n.exp[1].exp[1];
+                        //we initialize the coeficient side
+                        n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value+ 2 };
+                        n.exp[0].exp[0] = coef1;
+                        n.exp[0].exp[1] = coef2;
+                        //we initialize the variable side
+                        n.exp[1] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value++ };
+                        n.exp[1].exp[0] = exponent1;
+                        n.exp[1].exp[1] = exponent2;
+                    }
+                }
+                // now we go to the 2nd case 2* x^2 * 3 * x^3
+                if (n.exp[0].op == Operators.Multiplication && n.exp[1].op == Operators.Exponent)
+                {
+                    if(CheckForVariable(n.exp[0], 0, 3) == true && CheckForVariable(n.exp[1], 0, 2) == true)
+                    {
+                        Node coef1 = n.exp[0].exp[0].exp[0];
+                        Node coef2 = n.exp[0].exp[1];
+                        Node exponent1 = n.exp[0].exp[0].exp[1];
+                        Node exponent2 = n.exp[1];
+                        n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 2 };
+                        n.exp[0].exp[0] = coef1;
+                        n.exp[0].exp[1] = coef2;
+                        //we initialize the variable side
+                        n.exp[1] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value++ };
+                        n.exp[1].exp[0] = exponent1;
+                        n.exp[1].exp[1] = exponent2;
+                    }
+                }
             }
             return n;
         }
