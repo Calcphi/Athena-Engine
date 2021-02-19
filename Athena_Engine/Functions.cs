@@ -12,6 +12,8 @@ namespace Athena_Engine
         {
             Func<string, int, string> r = RootFunction;
             functions.Add(("root", r));
+            Func<string, int, string> pi = ReplacePi;
+            functions.Add(("pi", pi));
         }
 
        private int FindCloseParenthesis(string input, int first_parenthesis)
@@ -82,6 +84,28 @@ namespace Athena_Engine
             }
             
             return input.Replace(input.Substring(index, closing_parenthesis - index), "("+expression+")"+"^"+"(1/"+root_index+")");
+        }
+
+        public string ReplacePi(string input, int index)
+        {
+          string test = "";
+          int end_pi = 0;
+          for (int i = index; i<=(input.Length - 1); i++)
+            {
+                if (Char.IsLetter(input[i]))
+                {
+                    test += input[i];
+                } else
+                {
+                    end_pi = i - 1;
+                    break;
+                }
+            } 
+          if(test == "pi")
+            {
+                return input.Replace(input.Substring(index, index+2), Math.PI.ToString().Replace(",","."));
+            }
+            return input;
         }
 
     }
