@@ -343,6 +343,34 @@ namespace Athena_Engine
                     }
                 }
             } 
+            //Now we will work on the division beetween two exponents of the same variable
+            if(n.op == Operators.Division)
+            {
+                if(n.exp[0].op == Operators.Exponent && n.exp[1].op == Operators.Exponent){
+                    //check if the children are exponents 
+                    //Now we assume the the 4th rule is apllied and the variable is always on the left side of the simplification (have to create a rule for that)
+                    //also we need to check if node is a variable in them
+
+                    Node numerator_exponent_base = n.exp[0].exp[0];
+                    Node numerator_exponent_exponent= n.exp[0].exp[1];
+                    Node denominator_exponent_base = n.exp[1].exp[0];
+                    Node denominator_exponent_exponent = n.exp[1].exp[1];
+
+                    //we check if the variable is there
+                    if(CheckForVariable(numerator_exponent_base, 0, 2) == true && CheckForVariable(denominator_exponent_base, 0, 2) == true)
+                    {
+                        if(numerator_exponent_base.exp[1].var == denominator_exponent_base.exp[1].var)
+                        {
+                            n = new Node() { t = Types.Operator, op = Operators.Exponent, priority_value = n.priority_value };
+                            n.exp[0] = numerator_exponent_base.exp[1];
+                            n.exp[1] = new Node() { t = Types.Operator, op = Operators.Subtraction, priority_value = n.priority_value + 1 };
+                            n.exp[1].exp[0] = numerator_exponent_exponent;
+                            n.exp[1].exp[1] = denominator_exponent_exponent;
+                        }
+                    }
+
+                }
+            }
             return n;
         }
 
