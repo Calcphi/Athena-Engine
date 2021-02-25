@@ -277,6 +277,35 @@ namespace Athena_Engine
                     }
                 }
             }
+            if (n.op == Operators.Division)
+            {
+                if(n.exp[0].op == Operators.Multiplication && n.exp[1].op == Operators.Multiplication)
+                {
+                    Node numerator = n.exp[0];
+                    Node denominator = n.exp[1];
+                    if(CheckForVariable(numerator, 0, 2) == true && CheckForVariable(denominator, 0, 2))
+                    {
+                        //as always we assume that ´the variable is on the right and the coeficient is on the left
+                        Node coeficient_numerator = numerator.exp[0];
+                        Node coeficient_denominator = denominator.exp[0];
+
+                        Node variable_numerator = numerator.exp[1];
+                        Node variable_denominator = denominator.exp[1];
+
+                        n = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value };
+                        //create the coeficient division
+                        n.exp[0] = new Node() { t = Types.Operator, op = Operators.Division, priority_value = n.priority_value + 1 };
+                        n.exp[0].exp[0] = coeficient_numerator;
+                        n.exp[0].exp[1] = coeficient_denominator;
+
+                        //create the variable division
+                        n.exp[1] = new Node() { t = Types.Operator, op = Operators.Division, priority_value = n.priority_value + 1 };
+                        n.exp[1].exp[0] = variable_numerator;
+                        n.exp[1].exp[1] = variable_denominator;
+                    }
+                }
+            }
+
             return n;
         }
        
