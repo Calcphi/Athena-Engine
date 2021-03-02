@@ -415,13 +415,17 @@ namespace Athena_Engine
             {
                 bool n_testcondition = false;
                 bool check_children = true;
+                if(n_t is null)
+                {
+                    return true;
+                }
                 if(n_t.t == Types.Operator && n_t.op == Operators.Addition)
                 {
                     n_testcondition = true;
                 }
                 if(n_t.op == Operators.Exponent)
                 {
-                    if(n_t.exp[0].t == Types.Variable && n.exp[1].t == Types.Double) //this means that the exponent must be solved first
+                    if(n_t.exp[0].t == Types.Variable && n_t.exp[1].t == Types.Double) //this means that the exponent must be solved first
                     {
                         n_testcondition = true;
                         check_children = false;
@@ -471,13 +475,88 @@ namespace Athena_Engine
 
                 return n_testcondition && n1_testcondition && n2_testcondition;
             }
+
+            List<Node> GetAllTerms(Node root)
+            {
+                List<Node> terms = new List<Node>();
+                bool check_children = true;
+                if(root is null)
+                {
+                    return terms;
+                }
+                if(root.op != Operators.Addition || root.t != Types.Operator)
+                {
+                    check_children = false;
+                    terms.Add(root);
+                }
+                if(check_children == true)
+                {
+                    List<Node> terms1 = GetAllTerms(root.exp[0]);
+                    List<Node> terms2 = GetAllTerms(root.exp[1]);
+                    terms.AddRange(terms1);
+                    terms.AddRange(terms2);
+                }
+                return terms;
+            }
+
+            double GetDegree(Node n_term)
+            {
+                double degree = 0;
+                if(n_term.t == Types.Variable)
+                {
+                    degree = 1;
+                }
+                else if (n_term.op == Operators.Multiplication)
+                {
+                    if (n_term.exp[1].op == Operators.Exponent)
+                    {
+                        degree = n_term.exp[1].exp[1].value;
+                    }
+                    
+                }
+                else if(n_term.op == Operators.Exponent)
+                {
+                    degree = n_term.exp[1].value;
+                }
+                return degree;
+            }
+
+            Node WriteInCanonicalOrder(Node origin, int plus_used, int plus_max, List<(Node nn, double i)> node_list)
+            {
+                if(plus_used > plus_max)
+                {
+                    return origin;
+                }
+                origin = new Node() { t = Types.Operator, op = Operators.Addition };
+                if(plus_used == plus_max)
+                {
+                    origin.exp[0] = node_list[0].nn;
+                    origin.exp[1] = node_list[1].nn;
+                    return origin;
+                }
+                origin.exp[1] = node_list[node_list.Count - 1].nn; //use the last one in the list
+                node_list.Remove(node_list[node_list.Count - 1]); //remove the last item for the list because it's not needed anymore
+                origin.exp[0] = WriteInCanonicalOrder(origin.exp[0], plus_used + 1,plus_max, node_list);
+                return origin;
+            }
+
             //to apply the canonical order all nodes must with + between variables and numbers 
             //this must be applied at the root of the function, where n == last_node
             if(n == last_node)
             {
                 if(n.t==Types.Operator && n.op == Operators.Addition)
                 {
-                    Console.WriteLine(CheckIfCanonicalOrderIsPossible(n));
+                    if (CheckIfCanonicalOrderIsPossible(n)) {
+                        List<Node> terms = GetAllTerms(n);
+                        List<(Node nn, double i)> organized_list = new List<(Node, double)>();
+                        foreach(Node term in terms)
+                        {
+                            organized_list.Add((term ,GetDegree(term)));
+                        }
+                        organized_list.Sort((x,y) => y.i.CompareTo(x.i));
+                        //the addition needed is always one less of the total number of terms
+                        n = WriteInCanonicalOrder(n, 1, organized_list.Count - 1, organized_list);
+                    }
                 }
             }
             return n;
