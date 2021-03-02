@@ -39,12 +39,13 @@ namespace Athena_Engine
             while (true)
             {
                 Node new_simplify = SimplifyRecursion(old_simplify, old_simplify);
-                old_simplify = SolveWherePossible(old_simplify);
-                old_simplify = new_simplify;
+                new_simplify = SolveWherePossible(new_simplify);
                 if (new_simplify == old_simplify)
                 {
+                    old_simplify = new_simplify;
                     break;
                 }
+                old_simplify = new_simplify;
             }
             
             //after simplifying the maximum we can solve parts of the equation that only have numbers between them
@@ -409,6 +410,168 @@ namespace Athena_Engine
             return n;
         }
 
+        private List<(Node, double)> AddVariablesIfPossible(List<(Node,double)> NotOrganizedList)
+        {
+            string GetVariableName(Node n)
+            {
+                if(n.t == Types.Variable)
+                {
+                    return n.var;
+                }
+                if(n.op == Operators.Exponent)
+                {
+                    return n.exp[0].var;
+                }
+                if(n.op == Operators.Multiplication)
+                {
+                    if(n.exp[1].op == Operators.Exponent)
+                    {
+                        return n.exp[1].exp[0].var;
+                    }
+                    if(n.exp[1].t == Types.Variable){
+                        return n.exp[1].var;
+                    }
+                }
+                return "";
+            }
+
+            double GetCoeficientVariable(Node n)
+            {
+                if (n.t == Types.Variable)
+                {
+                    return 1;
+                }
+                if(n.op == Operators.Exponent)
+                {
+                    return 1;
+                }
+                if(n.op == Operators.Multiplication)
+                {
+                    if (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable)
+                    {
+                        return n.exp[0].value;
+                    }
+                }
+                return 0;
+            }
+            
+            
+            //this is preferable to call this function before it's organized makes my life a way lot easier and don't
+            //have to deal with stuff that is already done
+
+
+            double max_degree = 0;
+            //Now we find the max degree we have to loop from
+            foreach((Node n, double i) in NotOrganizedList)
+            {
+                if (max_degree < i)
+                {
+                    max_degree = i;
+                }
+            }
+            //this part wont be very optimized but oh well
+            for(int i = 0; i <= max_degree; i++)
+            {
+                //first of we get all members of the same degree in a list
+                List<Node> same_degree_members = new List<Node>();
+                foreach((Node n, double e) in NotOrganizedList)
+                {
+                    if (e == i)
+                    {
+                        same_degree_members.Add(n);
+                    }
+                }
+                List<int> used_degree_members = new List<int>();
+                //this will only do a addition at a time because implementation time and this can not be very efficient
+                for (int e = 0; e<=(same_degree_members.Count - 1); e++)
+                {
+                    if (used_degree_members.Contains(e))
+                    {
+                        continue;
+                    }
+                    string var_name1 = GetVariableName(same_degree_members[e]);
+                    for (int o = 0; o <= (same_degree_members.Count - 1); o++)
+                    {
+                        if(e == o)
+                        {
+                            continue;
+                        }
+                        if (used_degree_members.Contains(o) || used_degree_members.Contains(e))
+                        {
+                            continue;
+                        }
+                        string var_name2 = GetVariableName(same_degree_members[o]);
+                        if(var_name1 != var_name2) //check if the variables names are the same
+                        {
+                            continue;
+                        }
+                        if(var_name1 == "" || var_name2 == ""){
+                            continue;
+                        }
+                        double coef1 = GetCoeficientVariable(same_degree_members[e]);
+                        double coef2 = GetCoeficientVariable(same_degree_members[o]);
+                        //add to the used degree members
+                        used_degree_members.Add(e);
+                        used_degree_members.Add(o);
+
+                        //remove from original list
+                        NotOrganizedList.Remove((same_degree_members[e], i));
+                        NotOrganizedList.Remove((same_degree_members[o], i));
+
+                        //Finally we create a new node that does the addition between the two
+                        Node n_a = new Node() { t = Types.Operator, op = Operators.Multiplication };
+
+                        //create node for coeficient
+                        n_a.exp[0] = new Node() { t = Types.Double, value = coef1 + coef2 };
+
+                        if(i == 1)
+                        {
+                            n_a.exp[1] = new Node() { t = Types.Variable, var = var_name1 };
+                        }
+                        else
+                        {
+                            n_a.exp[1] = new Node() { t = Types.Operator, op = Operators.Exponent };
+                            n_a.exp[1].exp[0] = new Node() { t = Types.Variable, var = var_name1 };
+                            n_a.exp[1].exp[1] = new Node() { t = Types.Double, value = i };
+                        }
+                        //add n_a to the list
+                        NotOrganizedList.Add((n_a, i));
+                        
+
+
+                    }
+
+                }
+            }
+            return NotOrganizedList;
+        }
+
+        private double GetDegree(Node n_term)
+        {
+            double degree = 0;
+            if (n_term.t == Types.Variable)
+            {
+                degree = 1;
+            }
+            else if (n_term.op == Operators.Multiplication)
+            {
+                if (n_term.exp[1].op == Operators.Exponent)
+                {
+                    degree = n_term.exp[1].exp[1].value;
+                }
+                if(n_term.exp[1].t == Types.Variable)
+                {
+                    degree = 1;
+                }
+
+            }
+            else if (n_term.op == Operators.Exponent)
+            {
+                degree = n_term.exp[1].value;
+            }
+            return degree;
+        }
+
         private Node CananonicalOrder(Node n, Node last_node)
         {
             bool CheckIfCanonicalOrderIsPossible(Node n_t)
@@ -499,27 +662,7 @@ namespace Athena_Engine
                 return terms;
             }
 
-            double GetDegree(Node n_term)
-            {
-                double degree = 0;
-                if(n_term.t == Types.Variable)
-                {
-                    degree = 1;
-                }
-                else if (n_term.op == Operators.Multiplication)
-                {
-                    if (n_term.exp[1].op == Operators.Exponent)
-                    {
-                        degree = n_term.exp[1].exp[1].value;
-                    }
-                    
-                }
-                else if(n_term.op == Operators.Exponent)
-                {
-                    degree = n_term.exp[1].value;
-                }
-                return degree;
-            }
+
 
             Node WriteInCanonicalOrder(Node origin, int plus_used, int plus_max, List<(Node nn, double i)> node_list)
             {
@@ -548,14 +691,33 @@ namespace Athena_Engine
                 {
                     if (CheckIfCanonicalOrderIsPossible(n)) {
                         List<Node> terms = GetAllTerms(n);
+                        
                         List<(Node nn, double i)> organized_list = new List<(Node, double)>();
                         foreach(Node term in terms)
                         {
                             organized_list.Add((term ,GetDegree(term)));
                         }
+                        List<(Node nn, double i)> old_organized_list = new List<(Node, double)>();
+                        old_organized_list = organized_list;
+                        while (true)
+                        {
+                            organized_list = AddVariablesIfPossible(organized_list);
+                            if(organized_list == old_organized_list)
+                            {
+                                break;
+                            }
+                            old_organized_list = organized_list;
+                        }
                         organized_list.Sort((x,y) => y.i.CompareTo(x.i));
                         //the addition needed is always one less of the total number of terms
-                        n = WriteInCanonicalOrder(n, 1, organized_list.Count - 1, organized_list);
+                        if(organized_list.Count > 1)
+                        {
+                            n = WriteInCanonicalOrder(n, 1, organized_list.Count - 1, organized_list);
+                        } else
+                        {
+                            n = organized_list[0].nn;
+                        }
+                        
                     }
                 }
             }
