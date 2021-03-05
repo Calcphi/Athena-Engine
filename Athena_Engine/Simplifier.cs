@@ -348,10 +348,10 @@ namespace Athena_Engine
                     Node left_exponent_exponent = n.exp[0].exp[1];
                     Node right_exponent_base = n.exp[1].exp[0];
                     Node right_exponent_exponent = n.exp[1].exp[1];
-                    if (left_exponent_base.exp[1].t == Types.Variable && right_exponent_base.exp[1].t == Types.Variable)
+                    if (left_exponent_base.t == Types.Variable && right_exponent_base.t == Types.Variable)
                     {
-                        string var_name1 = left_exponent_base.exp[1].var;
-                        string var_name2 = right_exponent_base.exp[1].var;
+                        string var_name1 = left_exponent_base.var;
+                        string var_name2 = right_exponent_base.var;
                         if (var_name1 == var_name2)
                         {
                             //We also assume that the coefient of this variable is 1, a new rule must be applied before
@@ -359,7 +359,7 @@ namespace Athena_Engine
                             n = new Node { t = Types.Operator, op = Operators.Exponent, priority_value = old_n.priority_value }; //setting up exponent
 
                             //Now we setup the exponent side
-                            n.exp[0] = left_exponent_base.exp[1];
+                            n.exp[0] = left_exponent_base;
                             n.exp[1] = new Node { t = Types.Operator, op = Operators.Addition, priority_value = n.priority_value + 1 };
                             n.exp[1].exp[0] = left_exponent_exponent;
                             n.exp[1].exp[1] = right_exponent_exponent;
