@@ -13,6 +13,8 @@ namespace Athena_Engine
         public Derivator()
         {
             //this should be in priority order descending
+            Func<Node, Node> multiplication_rule = MultiplicationDerivative;
+            func_list.Add(multiplication_rule);
             Func<Node, Node> addition_rule = AdditionDerivate;
             func_list.Add(addition_rule);
             Func<Node, Node> basic_rule = BasicRuleOfDerivation;
@@ -98,6 +100,43 @@ namespace Athena_Engine
 
                     n.exp[0] = Derivate(n.exp[0]);
                     n.exp[1] = Derivate(n.exp[1]);
+                }
+            }
+            return n;
+        }
+
+        public Node MultiplicationDerivative(Node n)
+        {
+            if(n.f == Flags.Derivate)
+            {
+                if(n.op == Operators.Multiplication)
+                {
+                    n.f = Flags.None;
+                    //this rule will derivate this (u*v) into u'*v + u*v'
+                    Node left_side = n.exp[0];
+                    Node right_side = n.exp[1];
+                    //derivate both sides
+                    Node left_side_derivated = n.exp[0];
+                    left_side_derivated.f = Flags.Derivate;
+                    left_side_derivated = Derivate(left_side_derivated);
+
+                    Node right_side_derivated = n.exp[1];
+                    right_side_derivated.f = Flags.Derivate;
+                    right_side_derivated = Derivate(right_side_derivated);
+
+
+                    //create the addition operator
+                    n = new Node() { t = Types.Operator, op = Operators.Addition, priority_value = n.priority_value };
+                    //create the left hand side
+                    n.exp[0] = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 1 };
+                    n.exp[0].exp[0] = left_side_derivated;
+                    n.exp[0].exp[1] = right_side;
+                    //create the right hand side
+                    n.exp[1] = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 1 };
+                    n.exp[1].exp[0] = left_side;
+                    n.exp[1].exp[1] = right_side_derivated;
+
+
                 }
             }
             return n;
