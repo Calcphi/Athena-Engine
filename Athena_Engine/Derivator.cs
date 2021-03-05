@@ -12,7 +12,9 @@ namespace Athena_Engine
 
         public Derivator()
         {
-            //this should be in priority order
+            //this should be in priority order descending
+            Func<Node, Node> addition_rule = AdditionDerivate;
+            func_list.Add(addition_rule);
             Func<Node, Node> basic_rule = BasicRuleOfDerivation;
             func_list.Add(basic_rule);
         }
@@ -20,8 +22,12 @@ namespace Athena_Engine
         public Node Derivate(Node n)
         {
             //Before derivating the node must have the derivate flag in order to the rules work
-
+            bool flag_present = n.f == Flags.Derivate;
             n = simp.Simplify(n); //first we simplyfy this to the maximum
+            if (flag_present) //restore the derivate flag
+            {
+                n.f = Flags.Derivate;
+            }
             foreach(Func<Node, Node> func in func_list) //execute every rule
             {
                 n = func(n);
@@ -73,6 +79,25 @@ namespace Athena_Engine
                         n.exp[1].exp[1] = Derivate(base_exponent_derivate);
                         
                     }
+                }
+            }
+            return n;
+        }
+
+        public Node AdditionDerivate(Node n)
+        {
+            if(n.f == Flags.Derivate)
+            {
+                
+                if(n.t == Types.Operator && n.op == Operators.Addition) 
+                {
+                    n.f = Flags.None;
+                    //enable flags for derivation
+                    n.exp[0].f = Flags.Derivate;
+                    n.exp[1].f = Flags.Derivate;
+
+                    n.exp[0] = Derivate(n.exp[0]);
+                    n.exp[1] = Derivate(n.exp[1]);
                 }
             }
             return n;
