@@ -25,7 +25,9 @@ namespace Athena_Engine
             Func<Node, Node, Node> r5 = FifthRule;
             rules.Add(r5);
             Func<Node, Node, Node> despaghetti = Despaghettifier;
-            rules.Add(despaghetti);            
+            rules.Add(despaghetti);
+            Func<Node, Node, Node> r7 = SeventhRule;
+            rules.Add(SeventhRule);
             Func<Node, Node, Node> canonical = CananonicalOrder;
             rules.Add(canonical);
         }
@@ -231,7 +233,7 @@ namespace Athena_Engine
             {
                 return false;
             }
-            if (n.op == Operators.Multiplication && n.exp[1].t == Types.Variable) //variables are always on the right side
+            if ((n.op == Operators.Multiplication && n.exp[1].t == Types.Variable) || n.t == Types.Variable) //variables are always on the right side
             {
                 return true;
             }
@@ -396,7 +398,6 @@ namespace Athena_Engine
             }
             return n;
         }
-
         private Node Despaghettifier(Node n, Node last_node)
         {
             if(n.op == Operators.Multiplication )
@@ -407,6 +408,32 @@ namespace Athena_Engine
                     n = n.exp[1];
                 }
             } 
+            return n;
+        }
+
+        private Node SeventhRule(Node n, Node last_node)
+        {
+            //this rule will deal with this 2*x+(-1*2*x)
+            if (n.op == Operators.Multiplication)
+            {
+                //we check if the node on the left is a double
+                //The left side MUST always be an multiplication 
+                if (n.exp[0].t == Types.Double && n.exp[1].op == Operators.Multiplication)
+                {
+                    //the right side must always be a double for ease of use
+                    //we also check if there is a variable on the right side
+                    if (n.exp[1].exp[0].t == Types.Double && CheckForVariable(n.exp[1].exp[1],0,3) == true)
+                    {
+                        Node double_left = n.exp[0];
+                        Node double_right = n.exp[1].exp[0];
+                        Node variable_side = n.exp[1].exp[1];
+                        n = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value };
+                        n.exp[0] = new Node() { t = Types.Double, value = (double_left.value * double_right.value) };
+                        n.exp[1] = variable_side;
+                    }
+                    
+                }
+            }
             return n;
         }
 
