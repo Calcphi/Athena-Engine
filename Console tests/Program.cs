@@ -12,8 +12,9 @@ namespace Console_tests
             Tokenizer t = new Tokenizer();
             Parser p = new Parser();
             Solver s = new Solver();
+            Derivator d = new Derivator();
             Simplifier simp = new Simplifier(); //ha he's a simp
-            Console.Write("Solve equation (Y/n):");
+            Console.Write("Solve equation (S/I/D):");
             string decision = Console.ReadLine();
             while (true)
             {
@@ -36,15 +37,22 @@ namespace Console_tests
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
                 Console.WriteLine("\n");
-                if (decision == "Y" || decision == "y")
+                if (decision == "S" || decision == "S")
                 {
                     Console.WriteLine(s.Solve(nf));
                 }
-                else
+                else if(decision == "I" || decision == "i")
                 {
                     Node origin_simp = simp.Simplify(nf);
                     PrintTree(origin_simp, "", true);
                     Console.WriteLine(OrganizeTree(origin_simp, origin_simp));
+                }
+                else if(decision == "D" || decision == "d")
+                {
+                    nf.f = Flags.Derivate;
+                    Node derivated = d.Derivate(nf);
+                    PrintTree(derivated, "", true);
+                    Console.WriteLine(OrganizeTree(derivated, derivated));
                 }
                 
 
