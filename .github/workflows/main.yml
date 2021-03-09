@@ -32,9 +32,9 @@ jobs:
       - name: Change Folder into Athena_Engine
         run: cd Athena_Engine
       - name: Build Athena_Engine
-        run: dotnet build --configuration Release /p:Version=${VERSION}
+        run: dotnet build --configuration Release /p:Version="v0.0.1"
       - name: Package Athena_Engine
-        run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
+        run: dotnet pack --configuration Release /p:Version="v0.0.1" --no-build --output .
       - name: Send it to nuget
         run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --api-key ${GITHUB_TOKEN}
         env:
