@@ -36,7 +36,7 @@ jobs:
       - name: Package Athena_Engine
         run: dotnet pack --configuration Release /p:Version="0.0.1" --no-build --output .
       - name: Send it to nuget
-        run: dotnet nuget push Calcphi.Athena_Engine.0.0.1.nupkg --api-key ${GITHUB_TOKEN}
+        run: dotnet nuget push Calcphi.Athena_Engine.0.0.1.nupkg --source https://api.nuget.org/v3/index.json --api-key ${GITHUB_TOKEN}
         env:
           GITHUB_TOKEN: ${NUGET_TOKEN}
 
