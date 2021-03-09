@@ -30,6 +30,8 @@ namespace Athena_Engine
             rules.Add(SeventhRule);
             Func<Node, Node, Node> canonical = CananonicalOrder;
             rules.Add(canonical);
+            Func<Node, Node, Node> decrap = Decrapfier;
+            rules.Add(decrap);
         }
 
         public Node Simplify(Node origin)
@@ -287,9 +289,9 @@ namespace Athena_Engine
                 {
                     if (CheckForVariable(n.exp[0], 0, 3) == true && CheckForVariable(n.exp[1], 0, 2) == true)
                     {
-                        Node coef1 = n.exp[0].exp[0].exp[0];
-                        Node coef2 = n.exp[0].exp[1];
-                        Node exponent1 = n.exp[0].exp[0].exp[1];
+                        Node coef1 = n.exp[0].exp[0];
+                        Node coef2 = new Node { t = Types.Double, value = 1 };
+                        Node exponent1 = n.exp[0].exp[1];
                         Node exponent2 = n.exp[1];
                         n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 2 };
                         n.exp[0].exp[0] = coef1;
@@ -335,7 +337,6 @@ namespace Athena_Engine
 
         private Node FifthRule(Node n, Node prev_n)
         {
-            //TODO (Luis) Revamp Rule 5
             (Node, Node) GetBaseAndExponent(Node n_exp) {
                 //the left side is the base, right side is the exponent
                 if(n_exp.t == Types.Variable)
@@ -759,6 +760,47 @@ namespace Athena_Engine
                         }
                         
                     }
+                }
+            }
+            return n;
+        }
+
+        private Node Decrapfier(Node n, Node last_n)
+        {
+            //this should handle all the supid things like 0*x x^0 1*x x/1
+            //we start on the multiplication related ones
+            if(n.op == Operators.Multiplication)
+            {
+                //this fixes 0*x
+                if((n.exp[0].t == Types.Double && n.exp[0].value == 0) || (n.exp[1].t == Types.Double && n.exp[1].value == 0))
+                {
+                    return new Node() { t = Types.Double, value = 0 };
+                }
+                //if 1*x is on the left side
+                if (n.exp[0].t == Types.Double && n.exp[0].value == 1)
+                {
+                    return n.exp[1];
+                }                
+                //if x*1 is on the right side
+                if (n.exp[1].t == Types.Double && n.exp[1].value == 1)
+                {
+                    return n.exp[0];
+                }
+            }
+            //now we procced to the exponent one
+            if(n.op == Operators.Exponent)
+            {
+                if(n.exp[1].t == Types.Double && n.exp[1].value == 0)
+                {
+                    return new Node() { t = Types.Double, value = 1 };
+                }
+            }
+            if(n.op == Operators.Division)
+            {
+                //now we check if the denominator is one
+                if (n.exp[1].t == Types.Double && n.exp[1].value == 0)
+                {
+                    return n.exp[0];
                 }
             }
             return n;
