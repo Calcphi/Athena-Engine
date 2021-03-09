@@ -811,4 +811,4 @@ namespace Athena_Engine
 //TODO Create a rule that checks if all consequent nodes are multiplication and gets all terms 
 //then we can order the expression in order to other rules to be applied like canonical order but for multiplication
 
-//TODO create a function that fixes all the riduclous things 0*x x^0 etc..
+

@@ -13,6 +13,8 @@ namespace Athena_Engine
         public Derivator()
         {
             //this should be in priority order descending
+            Func<Node, Node> division_rule = DivisionDerivative;
+            func_list.Add(division_rule);
             Func<Node, Node> multiplication_rule = MultiplicationDerivative;
             func_list.Add(multiplication_rule);
             Func<Node, Node> addition_rule = AdditionDerivate;
@@ -141,6 +143,47 @@ namespace Athena_Engine
             }
             return n;
         }
+        public Node DivisionDerivative(Node n)
+        {
+            if (n.f == Flags.Derivate)
+            {
+                if (n.op == Operators.Division)
+                {
+                    n.f = Flags.None;
+                    Node numerator = n.exp[0];
+
+                    Node numerator_derivated = numerator;
+                    numerator_derivated.f = Flags.Derivate;
+                    numerator_derivated = Derivate(numerator_derivated);
+
+                    Node denominator = n.exp[1];
+                    Node denominator_derivated = denominator;
+                    denominator_derivated.f = Flags.Derivate;
+                    denominator_derivated = Derivate(denominator_derivated);
+
+                    //now we need to apply the rule
+                    //On the numerator we have an subtraction  (u'*v-u*v')
+                    n.exp[0] = new Node() { t = Types.Operator, op = Operators.Subtraction, priority_value = n.priority_value++ };
+                    //on the left side of the subtraction we have a multiplication of u'*v
+                    n.exp[0].exp[0] = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.exp[0].priority_value++ };
+                    n.exp[0].exp[0].exp[0] = numerator_derivated;
+                    n.exp[0].exp[0].exp[1] = denominator;
+
+                    //on the right side we have the multiplcation of u*v'
+                    n.exp[0].exp[1] = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.exp[0].priority_value++ };
+                    n.exp[0].exp[1].exp[0] = numerator;
+                    n.exp[0].exp[1].exp[1] = denominator_derivated;
+
+                    //now we need to raise the denominator to the power of 2
+                    n.exp[1] = new Node() { t = Types.Operator, op = Operators.Exponent, priority_value = n.priority_value++ };
+                    n.exp[1].exp[0] = denominator;
+                    n.exp[1].exp[1] = new Node() { t = Types.Double, value = 2 };
+                }
+            }
+            return n;
+        }
     }
-}
+
+
+}//TODO: Implement the division rule
 
