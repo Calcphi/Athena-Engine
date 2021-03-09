@@ -1,0 +1,55 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Build Athena Engine
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x' # SDK Version to use; x will use the latest version of the 3.1 channel
+      - name: Set VERSION variable from tag
+        run: echo "VERSION=${GITHUB_SHA}" >> $GITHUB_ENV
+      - name: Change Folder into Athena_Engine
+        run: cd Athena_Engine
+      - name: Build Athena_Engine
+        run: dotnet build --configuration Release /p:Version=${VERSION}
+      - name: Package Athena_Engine
+        run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
+      - name: Send it to nuget
+        run: dotnet nuget push NuGet.Workflow.${VERSION}.nupkg --api-key ${GITHUB_TOKEN}
+        env:
+          GITHUB_TOKEN: ${NUGET_TOKEN}
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
