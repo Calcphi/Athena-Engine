@@ -767,7 +767,7 @@ namespace Athena_Engine
 
         private Node Decrapfier(Node n, Node last_n)
         {
-            //this should handle all the supid things like 0*x x^0 1*x x/1
+            //this should handle all the supid things like 0*x x^0 1*x x/1 x+0
             //we start on the multiplication related ones
             if(n.op == Operators.Multiplication)
             {
@@ -794,11 +794,31 @@ namespace Athena_Engine
                 {
                     return new Node() { t = Types.Double, value = 1 };
                 }
+
+                if (n.exp[1].t == Types.Double && n.exp[1].value == 1)
+                {
+                    return n.exp[0];
+                }
+
             }
             if(n.op == Operators.Division)
             {
                 //now we check if the denominator is one
                 if (n.exp[1].t == Types.Double && n.exp[1].value == 0)
+                {
+                    return n.exp[0];
+                }
+            }
+            //we now check the addition because of x+0
+            if(n.t == Types.Operator && n.op == Operators.Addition)
+            {
+                //we check if the zero is the first member
+                if(n.exp[0].t == Types.Double && n.exp[0].value == 0)
+                {
+                    return n.exp[1];
+                }                
+                //we check if the zero is the second member
+                if(n.exp[1].t == Types.Double && n.exp[1].value == 0)
                 {
                     return n.exp[0];
                 }
