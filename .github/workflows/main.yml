@@ -25,8 +25,8 @@ jobs:
         
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
-          with:
-            dotnet-version: '3.1.x' # SDK Version to use; x will use the latest version of the 3.1 channel
+        with:
+          dotnet-version: '3.1.x' # SDK Version to use; x will use the latest version of the 3.1 channel
       - name: Set VERSION variable from tag
         run: echo "VERSION=${GITHUB_SHA}" >> $GITHUB_ENV
       - name: Change Folder into Athena_Engine
