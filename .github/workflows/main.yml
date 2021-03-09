@@ -33,9 +33,9 @@ jobs:
       - name: Change Folder into Athena_Engine
         run: cd Athena_Engine
       - name: Build Athena_Engine
-        run: dotnet build --configuration Release /p:Version="1.0.0${{ env.MY_DATE }}"
+        run: dotnet build --configuration Release /p:Version="1.0.0-date${{ env.MY_DATE }}"
       - name: Package Athena_Engine
-        run: dotnet pack --configuration Release /p:Version="1.0.0${{ env.MY_DATE }}" --no-build --output .
+        run: dotnet pack --configuration Release /p:Version="1.0.0-date${{ env.MY_DATE }}" --no-build --output .
       - name: Send it to nuget
         run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN}}
       
