@@ -27,15 +27,16 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.x' # SDK Version to use; x will use the latest version of the 3.1 channel
-      - name: Set VERSION variable from tag
-        run: echo "VERSION=${GITHUB_SHA}" >> $GITHUB_ENV
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y.%m.%d%H%M')"
       - name: Change Folder into Athena_Engine
         run: cd Athena_Engine
       - name: Build Athena_Engine
-        run: dotnet build --configuration Release /p:Version="0.0.1"
+        run: dotnet build --configuration Release /p:Version=${{ steps.date.outputs.date }}
       - name: Package Athena_Engine
-        run: dotnet pack --configuration Release /p:Version="0.0.1" --no-build --output .
+        run: dotnet pack --configuration Release /p:Version=${{ steps.date.outputs.date }} --no-build --output .
       - name: Send it to nuget
-        run: dotnet nuget push Calcphi.Athena_Engine.0.0.1.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN}}
-
+        run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN}}
+      
 
