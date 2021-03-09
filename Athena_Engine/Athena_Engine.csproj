@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+
+  </PropertyGroup>
+
+  <PropertyGroup>
 	  <PackageId>Calcphi.Athena_Engine</PackageId>
 	  <RepositoryType>git</RepositoryType>
 	  <RepositoryUrl>https://github.com/Calcphi/Athena-Engine/</RepositoryUrl>
-  </PropertyGroup>
-
+	</PropertyGroup>
 </Project>
