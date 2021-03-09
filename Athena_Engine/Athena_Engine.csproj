@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,5 +9,6 @@
 	  <PackageId>Calcphi.Athena_Engine</PackageId>
 	  <RepositoryType>git</RepositoryType>
 	  <RepositoryUrl>https://github.com/Calcphi/Athena-Engine/</RepositoryUrl>
+	  <IsPackable>true</IsPackable>
 	</PropertyGroup>
 </Project>
