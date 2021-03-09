@@ -726,7 +726,7 @@ namespace Athena_Engine
 
             //to apply the canonical order all nodes must with + between variables and numbers 
             //this must be applied at the root of the function, where n == last_node
-            if(n == last_node)
+            if(true)
             {
                 if(n.t==Types.Operator && n.op == Operators.Addition)
                 {
