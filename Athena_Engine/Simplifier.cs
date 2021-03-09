@@ -30,6 +30,8 @@ namespace Athena_Engine
             rules.Add(SeventhRule);
             Func<Node, Node, Node> canonical = CananonicalOrder;
             rules.Add(canonical);
+            Func<Node, Node, Node> decrap = Decrapfier;
+            rules.Add(decrap);
         }
 
         public Node Simplify(Node origin)
@@ -287,9 +289,9 @@ namespace Athena_Engine
                 {
                     if (CheckForVariable(n.exp[0], 0, 3) == true && CheckForVariable(n.exp[1], 0, 2) == true)
                     {
-                        Node coef1 = n.exp[0].exp[0].exp[0];
-                        Node coef2 = n.exp[0].exp[1];
-                        Node exponent1 = n.exp[0].exp[0].exp[1];
+                        Node coef1 = n.exp[0].exp[0];
+                        Node coef2 = new Node { t = Types.Double, value = 1 };
+                        Node exponent1 = n.exp[0].exp[1];
                         Node exponent2 = n.exp[1];
                         n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 2 };
                         n.exp[0].exp[0] = coef1;
@@ -335,23 +337,36 @@ namespace Athena_Engine
 
         private Node FifthRule(Node n, Node prev_n)
         {
+            (Node, Node) GetBaseAndExponent(Node n_exp) {
+                //the left side is the base, right side is the exponent
+                if(n_exp.t == Types.Variable)
+                {
+                    Node exponent = new Node() { t = Types.Double, value = 1 };
+                    return (n_exp, exponent);
 
+                }
+                else if(n_exp.op == Operators.Exponent)
+                {
+                    return (n_exp.exp[0], n_exp.exp[1]);
+                }
+                return (null, null); //it's not supposed to get to this point 
+            }
             if (n.t == Types.Operator && n.op == Operators.Multiplication)//check if node is for multiplication
             {
-                if ((n.exp[0].t == Types.Operator && n.exp[0].op == Operators.Exponent) && (n.exp[1].t == Types.Operator && n.exp[1].op == Operators.Exponent))
+                if ((n.exp[0].op == Operators.Exponent || n.exp[0].t == Types.Variable) && (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable))
                 {
                     //check if the children are exponents 
                     //Now we assume the the 4th rule is apllied and the variable is always on the left side of the simplification (have to create a rule for that)
                     //also we need to check if node is a variable in them
 
-                    Node left_exponent_base = n.exp[0].exp[0];
-                    Node left_exponent_exponent = n.exp[0].exp[1];
-                    Node right_exponent_base = n.exp[1].exp[0];
-                    Node right_exponent_exponent = n.exp[1].exp[1];
-                    if (left_exponent_base.exp[1].t == Types.Variable && right_exponent_base.exp[1].t == Types.Variable)
+                    (Node left_exponent_base, Node left_exponent_exponent) = GetBaseAndExponent(n.exp[0]);
+                    (Node right_exponent_base, Node right_exponent_exponent) = GetBaseAndExponent(n.exp[1]);
+
+
+                    if (left_exponent_base.t == Types.Variable && right_exponent_base.t == Types.Variable)
                     {
-                        string var_name1 = left_exponent_base.exp[1].var;
-                        string var_name2 = right_exponent_base.exp[1].var;
+                        string var_name1 = left_exponent_base.var;
+                        string var_name2 = right_exponent_base.var;
                         if (var_name1 == var_name2)
                         {
                             //We also assume that the coefient of this variable is 1, a new rule must be applied before
@@ -359,7 +374,7 @@ namespace Athena_Engine
                             n = new Node { t = Types.Operator, op = Operators.Exponent, priority_value = old_n.priority_value }; //setting up exponent
 
                             //Now we setup the exponent side
-                            n.exp[0] = left_exponent_base.exp[1];
+                            n.exp[0] = left_exponent_base;
                             n.exp[1] = new Node { t = Types.Operator, op = Operators.Addition, priority_value = n.priority_value + 1 };
                             n.exp[1].exp[0] = left_exponent_exponent;
                             n.exp[1].exp[1] = right_exponent_exponent;
@@ -370,24 +385,23 @@ namespace Athena_Engine
             //Now we will work on the division beetween two exponents of the same variable
             if (n.op == Operators.Division)
             {
-                if (n.exp[0].op == Operators.Exponent && n.exp[1].op == Operators.Exponent)
+                if ((n.exp[0].op == Operators.Exponent || n.exp[0].t == Types.Variable) && (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable))
                 {
                     //check if the children are exponents 
                     //Now we assume the the 4th rule is apllied and the variable is always on the left side of the simplification (have to create a rule for that)
                     //also we need to check if node is a variable in them
 
-                    Node numerator_exponent_base = n.exp[0].exp[0];
-                    Node numerator_exponent_exponent = n.exp[0].exp[1];
-                    Node denominator_exponent_base = n.exp[1].exp[0];
-                    Node denominator_exponent_exponent = n.exp[1].exp[1];
+                    (Node numerator_exponent_base, Node numerator_exponent_exponent) = GetBaseAndExponent(n.exp[0]);
+                    (Node denominator_exponent_base, Node denominator_exponent_exponent) = GetBaseAndExponent(n.exp[1]);
+
 
                     //we check if the variable is there
                     if (CheckForVariable(numerator_exponent_base, 0, 2) == true && CheckForVariable(denominator_exponent_base, 0, 2) == true)
                     {
-                        if (numerator_exponent_base.exp[1].var == denominator_exponent_base.exp[1].var)
+                        if (numerator_exponent_base.var == denominator_exponent_base.var)
                         {
                             n = new Node() { t = Types.Operator, op = Operators.Exponent, priority_value = n.priority_value };
-                            n.exp[0] = numerator_exponent_base.exp[1];
+                            n.exp[0] = numerator_exponent_base;
                             n.exp[1] = new Node() { t = Types.Operator, op = Operators.Subtraction, priority_value = n.priority_value + 1 };
                             n.exp[1].exp[0] = numerator_exponent_exponent;
                             n.exp[1].exp[1] = denominator_exponent_exponent;
@@ -712,7 +726,7 @@ namespace Athena_Engine
 
             //to apply the canonical order all nodes must with + between variables and numbers 
             //this must be applied at the root of the function, where n == last_node
-            if(n == last_node)
+            if(true)
             {
                 if(n.t==Types.Operator && n.op == Operators.Addition)
                 {
@@ -750,5 +764,70 @@ namespace Athena_Engine
             }
             return n;
         }
+
+        private Node Decrapfier(Node n, Node last_n)
+        {
+            //this should handle all the supid things like 0*x x^0 1*x x/1 x+0
+            //we start on the multiplication related ones
+            if(n.op == Operators.Multiplication)
+            {
+                //this fixes 0*x
+                if((n.exp[0].t == Types.Double && n.exp[0].value == 0) || (n.exp[1].t == Types.Double && n.exp[1].value == 0))
+                {
+                    return new Node() { t = Types.Double, value = 0 };
+                }
+                //if 1*x is on the left side
+                if (n.exp[0].t == Types.Double && n.exp[0].value == 1)
+                {
+                    return n.exp[1];
+                }                
+                //if x*1 is on the right side
+                if (n.exp[1].t == Types.Double && n.exp[1].value == 1)
+                {
+                    return n.exp[0];
+                }
+            }
+            //now we procced to the exponent one
+            if(n.op == Operators.Exponent)
+            {
+                if(n.exp[1].t == Types.Double && n.exp[1].value == 0)
+                {
+                    return new Node() { t = Types.Double, value = 1 };
+                }
+
+                if (n.exp[1].t == Types.Double && n.exp[1].value == 1)
+                {
+                    return n.exp[0];
+                }
+
+            }
+            if(n.op == Operators.Division)
+            {
+                //now we check if the denominator is one
+                if (n.exp[1].t == Types.Double && n.exp[1].value == 0)
+                {
+                    return n.exp[0];
+                }
+            }
+            //we now check the addition because of x+0
+            if(n.t == Types.Operator && n.op == Operators.Addition)
+            {
+                //we check if the zero is the first member
+                if(n.exp[0].t == Types.Double && n.exp[0].value == 0)
+                {
+                    return n.exp[1];
+                }                
+                //we check if the zero is the second member
+                if(n.exp[1].t == Types.Double && n.exp[1].value == 0)
+                {
+                    return n.exp[0];
+                }
+            }
+            return n;
+        }
     }
 }
+
+
+
+

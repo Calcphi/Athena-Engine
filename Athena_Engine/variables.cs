@@ -14,7 +14,8 @@ namespace Athena_Engine
     public enum Flags
     {
         None,
-        Priority
+        Priority,
+        Derivate
     }
 
     public enum Operators
