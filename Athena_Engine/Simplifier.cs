@@ -335,19 +335,33 @@ namespace Athena_Engine
 
         private Node FifthRule(Node n, Node prev_n)
         {
+            //TODO (Luis) Revamp Rule 5
+            (Node, Node) GetBaseAndExponent(Node n_exp) {
+                //the left side is the base, right side is the exponent
+                if(n_exp.t == Types.Variable)
+                {
+                    Node exponent = new Node() { t = Types.Double, value = 1 };
+                    return (n_exp, exponent);
 
+                }
+                else if(n_exp.op == Operators.Exponent)
+                {
+                    return (n_exp.exp[0], n_exp.exp[1]);
+                }
+                return (null, null); //it's not supposed to get to this point 
+            }
             if (n.t == Types.Operator && n.op == Operators.Multiplication)//check if node is for multiplication
             {
-                if ((n.exp[0].t == Types.Operator && n.exp[0].op == Operators.Exponent) && (n.exp[1].t == Types.Operator && n.exp[1].op == Operators.Exponent))
+                if ((n.exp[0].op == Operators.Exponent || n.exp[0].t == Types.Variable) && (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable))
                 {
                     //check if the children are exponents 
                     //Now we assume the the 4th rule is apllied and the variable is always on the left side of the simplification (have to create a rule for that)
                     //also we need to check if node is a variable in them
 
-                    Node left_exponent_base = n.exp[0].exp[0];
-                    Node left_exponent_exponent = n.exp[0].exp[1];
-                    Node right_exponent_base = n.exp[1].exp[0];
-                    Node right_exponent_exponent = n.exp[1].exp[1];
+                    (Node left_exponent_base, Node left_exponent_exponent) = GetBaseAndExponent(n.exp[0]);
+                    (Node right_exponent_base, Node right_exponent_exponent) = GetBaseAndExponent(n.exp[1]);
+
+
                     if (left_exponent_base.t == Types.Variable && right_exponent_base.t == Types.Variable)
                     {
                         string var_name1 = left_exponent_base.var;
@@ -370,16 +384,15 @@ namespace Athena_Engine
             //Now we will work on the division beetween two exponents of the same variable
             if (n.op == Operators.Division)
             {
-                if (n.exp[0].op == Operators.Exponent && n.exp[1].op == Operators.Exponent)
+                if ((n.exp[0].op == Operators.Exponent || n.exp[0].t == Types.Variable) && (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable))
                 {
                     //check if the children are exponents 
                     //Now we assume the the 4th rule is apllied and the variable is always on the left side of the simplification (have to create a rule for that)
                     //also we need to check if node is a variable in them
 
-                    Node numerator_exponent_base = n.exp[0].exp[0];
-                    Node numerator_exponent_exponent = n.exp[0].exp[1];
-                    Node denominator_exponent_base = n.exp[1].exp[0];
-                    Node denominator_exponent_exponent = n.exp[1].exp[1];
+                    (Node numerator_exponent_base, Node numerator_exponent_exponent) = GetBaseAndExponent(n.exp[0]);
+                    (Node denominator_exponent_base, Node denominator_exponent_exponent) = GetBaseAndExponent(n.exp[1]);
+
 
                     //we check if the variable is there
                     if (CheckForVariable(numerator_exponent_base, 0, 2) == true && CheckForVariable(denominator_exponent_base, 0, 2) == true)
@@ -752,3 +765,8 @@ namespace Athena_Engine
         }
     }
 }
+
+//TODO Create a rule that checks if all consequent nodes are multiplication and gets all terms 
+//then we can order the expression in order to other rules to be applied like canonical order but for multiplication
+
+//TODO create a function that fixes all the riduclous things 0*x x^0 etc..
