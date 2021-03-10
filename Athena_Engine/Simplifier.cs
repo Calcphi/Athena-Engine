@@ -804,9 +804,13 @@ namespace Athena_Engine
             if(n.op == Operators.Division)
             {
                 //now we check if the denominator is one
-                if (n.exp[1].t == Types.Double && n.exp[1].value == 0)
+                if (n.exp[1].t == Types.Double && n.exp[1].value == 1)
                 {
                     return n.exp[0];
+                }
+                if (n.exp[0].t == Types.Double && n.exp[0].value == 0)
+                {
+                    return new Node() { t = Types.Double, value = 0 };
                 }
             }
             //we now check the addition because of x+0
