@@ -46,7 +46,7 @@ namespace Athena_Engine
                 new_simplify = SolveWherePossible(new_simplify);
                 if (new_simplify == old_simplify)
                 {
-                    old_simplify = new_simplify;
+                    old_simplify = SimplifyRecursion(new_simplify, new_simplify);
                     break;
                 }
                 old_simplify = new_simplify;
@@ -251,6 +251,18 @@ namespace Athena_Engine
 
         private Node ForthHalfRule(Node n, Node prev_n)
         {
+            (Node, Node) GetCoefientAndVariable(Node num)
+            {
+                if(num.op == Operators.Multiplication && CheckForVariable(num.exp[1], 0, 2))
+                {
+                    return (num.exp[0], num.exp[1]);
+                } else if(num.t == Types.Variable || (num.op == Operators.Exponent && CheckForVariable(num.exp[0], 0, 2))){
+                    return (new Node() { t = Types.Double, value = 1 }, num);
+                }
+                return (null, null);
+                
+            }
+
             //Ok this rule is a precedent to rule five, because it's a problem if the equation has a coeficient, this is to detect that
             //and seperate the coeficients before the fifth rule is applied. 2* x^2 * 3 * x^3 something like this
             if (n.op == Operators.Multiplication)
@@ -270,10 +282,9 @@ namespace Athena_Engine
                     //we use the checkforvariable function
                     if (CheckForVariable(n.exp[0], 0, 2) == true && CheckForVariable(n.exp[1], 0, 2) == true)
                     {
-                        Node coef1 = n.exp[0].exp[0]; // once again assuming that coeficients are on the left
-                        Node coef2 = n.exp[1].exp[0];
-                        Node exponent1 = n.exp[0].exp[1]; // assuming that exponents or variables are on the right
-                        Node exponent2 = n.exp[1].exp[1];
+                        (Node coef1, Node exponent1) = GetCoefientAndVariable(n.exp[0]);
+                        (Node coef2, Node exponent2) = GetCoefientAndVariable(n.exp[1]);
+
                         //we initialize the coeficient side
                         n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 2 };
                         n.exp[0].exp[0] = coef1;
@@ -289,10 +300,8 @@ namespace Athena_Engine
                 {
                     if (CheckForVariable(n.exp[0], 0, 3) == true && CheckForVariable(n.exp[1], 0, 2) == true)
                     {
-                        Node coef1 = n.exp[0].exp[0];
-                        Node coef2 = new Node { t = Types.Double, value = 1 };
-                        Node exponent1 = n.exp[0].exp[1];
-                        Node exponent2 = n.exp[1];
+                        (Node coef1, Node exponent1) = GetCoefientAndVariable(n.exp[0]);
+                        (Node coef2, Node exponent2) = GetCoefientAndVariable(n.exp[1]);
                         n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 2 };
                         n.exp[0].exp[0] = coef1;
                         n.exp[0].exp[1] = coef2;
@@ -305,18 +314,20 @@ namespace Athena_Engine
             }
             if (n.op == Operators.Division)
             {
-                if (n.exp[0].op == Operators.Multiplication && n.exp[1].op == Operators.Multiplication)
+                if ((n.exp[0].op == Operators.Multiplication || n.exp[0].t == Types.Variable) && (n.exp[1].op == Operators.Multiplication || n.exp[1].t == Types.Variable))
                 {
                     Node numerator = n.exp[0];
                     Node denominator = n.exp[1];
                     if (CheckForVariable(numerator, 0, 2) == true && CheckForVariable(denominator, 0, 2))
                     {
                         //as always we assume that ´the variable is on the right and the coeficient is on the left
-                        Node coeficient_numerator = numerator.exp[0];
-                        Node coeficient_denominator = denominator.exp[0];
+                        (Node coeficient_numerator, Node variable_numerator) = GetCoefientAndVariable(numerator);
+                        (Node coeficient_denominator, Node variable_denominator) = GetCoefientAndVariable(denominator);
 
-                        Node variable_numerator = numerator.exp[1];
-                        Node variable_denominator = denominator.exp[1];
+                        if(coeficient_denominator.value == coeficient_numerator.value) //if they are equal ignore it
+                        {
+                            return n;
+                        }
 
                         n = new Node() { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value };
                         //create the coeficient division
