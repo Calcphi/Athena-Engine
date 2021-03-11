@@ -276,7 +276,7 @@ namespace Athena_Engine
                 // 2nd 2* x^2 * 3 * x^3
 
                 //we do the first case first
-                if (n.exp[0].op == Operators.Multiplication && n.exp[1].op == Operators.Multiplication)
+                if ((n.exp[0].op == Operators.Multiplication || n.exp[0].t == Types.Variable) && (n.exp[1].op ==Operators.Multiplication || n.exp[1].t == Types.Variable))
                 {
                     //now we need to know if there is an variable on both children 
                     //we use the checkforvariable function
@@ -284,6 +284,11 @@ namespace Athena_Engine
                     {
                         (Node coef1, Node exponent1) = GetCoefientAndVariable(n.exp[0]);
                         (Node coef2, Node exponent2) = GetCoefientAndVariable(n.exp[1]);
+
+                        if ((coef1.value == coef2.value) && coef1.value == 1) //if they are equal ignore it
+                        {
+                            return n;
+                        }
 
                         //we initialize the coeficient side
                         n.exp[0] = new Node { t = Types.Operator, op = Operators.Multiplication, priority_value = n.priority_value + 2 };
@@ -296,7 +301,7 @@ namespace Athena_Engine
                     }
                 }
                 // now we go to the 2nd case 2* x^2 * 3 * x^3, where all have the same priority level
-                if (n.exp[0].op == Operators.Multiplication && n.exp[1].op == Operators.Exponent)
+                if (n.exp[0].op == Operators.Multiplication && (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable))
                 {
                     if (CheckForVariable(n.exp[0], 0, 3) == true && CheckForVariable(n.exp[1], 0, 2) == true)
                     {
@@ -324,7 +329,7 @@ namespace Athena_Engine
                         (Node coeficient_numerator, Node variable_numerator) = GetCoefientAndVariable(numerator);
                         (Node coeficient_denominator, Node variable_denominator) = GetCoefientAndVariable(denominator);
 
-                        if(coeficient_denominator.value == coeficient_numerator.value) //if they are equal ignore it
+                        if(coeficient_denominator.value == coeficient_numerator.value && coeficient_numerator.value == 0) //if they are equal ignore it
                         {
                             return n;
                         }
