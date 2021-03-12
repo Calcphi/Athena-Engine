@@ -103,7 +103,7 @@ namespace Athena_Engine
             } 
           if(test == "pi")
             {
-                return input.Replace(input.Substring(index, index+2), Math.PI.ToString().Replace(",","."));
+                return input.Replace("pi", Math.PI.ToString().Replace(",","."));
             }
             return input;
         }
