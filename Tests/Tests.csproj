@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="SolverTesting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimplifierTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
