@@ -46,7 +46,7 @@ namespace Athena_Engine
                 new_simplify = SolveWherePossible(new_simplify);
                 if (new_simplify == old_simplify)
                 {
-                    old_simplify = SimplifyRecursion(new_simplify, new_simplify);
+                    old_simplify = SolveWherePossible(SimplifyRecursion(new_simplify, new_simplify));
                     break;
                 }
                 old_simplify = new_simplify;
@@ -253,7 +253,7 @@ namespace Athena_Engine
         {
             (Node, Node) GetCoefientAndVariable(Node num)
             {
-                if(num.op == Operators.Multiplication && CheckForVariable(num.exp[1], 0, 2))
+                if(num.op == Operators.Multiplication && (CheckForVariable(num.exp[1], 0, 2) || CheckForVariable(n.exp[0], 0,2)))
                 {
                     return (num.exp[0], num.exp[1]);
                 } else if(num.t == Types.Variable || (num.op == Operators.Exponent && CheckForVariable(num.exp[0], 0, 2))){
@@ -301,7 +301,7 @@ namespace Athena_Engine
                     }
                 }
                 // now we go to the 2nd case 2* x^2 * 3 * x^3, where all have the same priority level
-                if (n.exp[0].op == Operators.Multiplication && (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable))
+                if ((n.exp[0].op == Operators.Multiplication && (n.exp[1].op == Operators.Exponent || n.exp[1].t == Types.Variable)) || n.exp[1].op == Operators.Multiplication && (n.exp[0].op == Operators.Exponent || n.exp[0].t == Types.Variable))
                 {
                     if (CheckForVariable(n.exp[0], 0, 3) == true && CheckForVariable(n.exp[1], 0, 2) == true)
                     {
