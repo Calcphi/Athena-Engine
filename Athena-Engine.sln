@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console tests", "Console te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Athena_Engine", "Athena_Engine\Athena_Engine.csproj", "{64650D85-78D9-481B-BE3C-7E57A1679E53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{91593592-689B-48A8-AFDA-43F7C7C2E28C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{6B96E352-51F2-4535-98C9-6331AA75E711}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,10 @@ Global
 		{64650D85-78D9-481B-BE3C-7E57A1679E53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64650D85-78D9-481B-BE3C-7E57A1679E53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64650D85-78D9-481B-BE3C-7E57A1679E53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91593592-689B-48A8-AFDA-43F7C7C2E28C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91593592-689B-48A8-AFDA-43F7C7C2E28C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91593592-689B-48A8-AFDA-43F7C7C2E28C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91593592-689B-48A8-AFDA-43F7C7C2E28C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B96E352-51F2-4535-98C9-6331AA75E711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B96E352-51F2-4535-98C9-6331AA75E711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B96E352-51F2-4535-98C9-6331AA75E711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B96E352-51F2-4535-98C9-6331AA75E711}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
