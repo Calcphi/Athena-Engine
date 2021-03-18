@@ -36,12 +36,11 @@ namespace Athena_Engine
                     bool op = n1.op == n2.op;
                     bool var = n1.var == n2.var;
                     bool value = n1.value == n2.value;
-                    bool priority = n1.priority_value == n2.priority_value;
 
                     bool left_side = n1.exp[0] == n2.exp[0];
                     bool right_side = n1.exp[1] == n2.exp[1];
 
-                    return t && op && var && value && priority && left_side && right_side;
+                    return t && op && var && value  && left_side && right_side;
 
                 }
             }

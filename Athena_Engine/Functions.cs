@@ -82,8 +82,11 @@ namespace Athena_Engine
             {
                 expression += input[i];
             }
-            
-            return input.Replace(input.Substring(index, closing_parenthesis - index), "("+expression+")"+"^"+"(1/"+root_index+")");
+
+            string root1 = input.Substring(0, index);
+            string root2 = input.Substring(closing_parenthesis+1);
+            string toreplace = "(" + expression + ")" + "^" + "(1/" + root_index + ")";
+            return root1 + toreplace + root2;
         }
 
         public string ReplacePi(string input, int index)
@@ -103,7 +106,7 @@ namespace Athena_Engine
             } 
           if(test == "pi")
             {
-                return input.Replace(input.Substring(index, index+2), Math.PI.ToString().Replace(",","."));
+                return input.Replace("pi", Math.PI.ToString().Replace(",","."));
             }
             return input;
         }
