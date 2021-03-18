@@ -329,7 +329,7 @@ namespace Athena_Engine
                         (Node coeficient_numerator, Node variable_numerator) = GetCoefientAndVariable(numerator);
                         (Node coeficient_denominator, Node variable_denominator) = GetCoefientAndVariable(denominator);
 
-                        if(coeficient_denominator.value == coeficient_numerator.value && coeficient_numerator.value == 0) //if they are equal ignore it
+                        if(coeficient_denominator.value == coeficient_numerator.value && coeficient_numerator.value == 1) //if they are equal ignore it
                         {
                             return n;
                         }
@@ -356,7 +356,7 @@ namespace Athena_Engine
                         (Node coeficient_numerator, Node variable_numerator) = GetCoefientAndVariable(numerator);
                         (Node coeficient_denominator, Node variable_denominator) = GetCoefientAndVariable(denominator);
 
-                        if (coeficient_denominator.value == coeficient_numerator.value && coeficient_numerator.value == 0) //if they are equal ignore it
+                        if (coeficient_denominator.value == coeficient_numerator.value && coeficient_numerator.value == 1) //if they are equal ignore it
                         {
                             return n;
                         }
