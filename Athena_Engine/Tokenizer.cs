@@ -32,7 +32,7 @@ namespace Athena_Engine {
 
 					index = input.IndexOf(func, index);
 					input = thing(input, index);
-					if (index == input.IndexOf(func, index))
+					if (index != input.IndexOf(func, index))
                     {
 						index++;
                     }
@@ -46,6 +46,7 @@ namespace Athena_Engine {
 
 		public List<Node> Tokenize(string s){
 			s = SearchForFunctions(s);
+			Console.WriteLine(s);
 			int len_to_jump = 0;
 			List<int> priority_operator = new List<int>();
 			List<Node> list_of_nodes = new List<Node>();
