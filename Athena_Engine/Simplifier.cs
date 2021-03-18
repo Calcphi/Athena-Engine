@@ -723,9 +723,9 @@ namespace Athena_Engine
                 return n_testcondition && n1_testcondition && n2_testcondition;
             }
 
-            List<Node> GetAllTerms(Node root)
+            List<(Node, int)> GetAllTerms(Node root)
             {
-                List<Node> terms = new List<Node>();
+                List<(Node, int)> terms = new List<(Node, int)>();
                 bool check_children = true;
                 if(root is null)
                 {
@@ -734,12 +734,12 @@ namespace Athena_Engine
                 if(root.op != Operators.Addition || root.t != Types.Operator)
                 {
                     check_children = false;
-                    terms.Add(root);
+                    terms.Add((root, root.priority_value));
                 }
                 if(check_children == true)
                 {
-                    List<Node> terms1 = GetAllTerms(root.exp[0]);
-                    List<Node> terms2 = GetAllTerms(root.exp[1]);
+                    List<(Node, int)> terms1 = GetAllTerms(root.exp[0]);
+                    List<(Node, int)> terms2 = GetAllTerms(root.exp[1]);
                     terms.AddRange(terms1);
                     terms.AddRange(terms2);
                 }
@@ -774,11 +774,17 @@ namespace Athena_Engine
                 if(n.t==Types.Operator && n.op == Operators.Addition)
                 {
                     if (CheckIfCanonicalOrderIsPossible(n)) {
-                        List<Node> terms = GetAllTerms(n);
+                        List<(Node, int)> terms = GetAllTerms(n);
                         
                         List<(Node nn, double i)> organized_list = new List<(Node, double)>();
-                        foreach(Node term in terms)
+                        int min_priority_value = terms[0].Item2;
+
+                        foreach((Node term, int priority_value) in terms)
                         {
+                            if(min_priority_value > priority_value && priority_value != 0)
+                            {
+                                min_priority_value = priority_value;
+                            }
                             organized_list.Add((term ,GetDegree(term)));
                         }
                         List<(Node nn, double i)> old_organized_list = new List<(Node, double)>();
@@ -801,7 +807,8 @@ namespace Athena_Engine
                         {
                             n = organized_list[0].nn;
                         }
-                        
+                        n.f = Flags.Priority;
+                        n.priority_value = min_priority_value;
                     }
                 }
             }
