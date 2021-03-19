@@ -198,7 +198,7 @@ namespace Athena_Engine {
 					bool found_parentheses = false;
 					for (int e = i + 1; e <= (s.Length - 1); e++)
                     {
-						List<char> operators = new List<char>() { '+', '-', '*', '/', '^' }; //Add the length of the operators that need the priority flag
+						List<char> operators = new List<char>() { '+', '-', '*', '/', '^'}; //Add the length of the operators that need the priority flag
 						if (operators.Contains(s[e]))
                         {
 							priority_operator.Add(e);
@@ -222,6 +222,44 @@ namespace Athena_Engine {
                     }
                 }
 			}
+
+			List<int> variable_int = new List<int>(); 
+			//Now we will check if x is near an operator with priority value
+			for(int i = 0; i <= (list_of_nodes.Count - 1); i++)
+            {
+				if(list_of_nodes[i].t == Types.Variable)
+                {
+					variable_int.Add(i);
+                }
+            }
+			foreach(int index in variable_int)
+            {
+                try
+                {
+					if (list_of_nodes[index - 1].t == Types.Operator)
+					{
+						if (list_of_nodes[index - 1].f == Flags.Priority)
+						{
+							list_of_nodes[index].f = Flags.Priority;
+							list_of_nodes[index].priority_value = list_of_nodes[index - 1].priority_value;
+						}
+
+					}
+				}
+                catch (ArgumentOutOfRangeException) //if variable is on the right check on the left
+                {
+					if (list_of_nodes[index + 1].t == Types.Operator)
+					{
+						if (list_of_nodes[index + 1].f == Flags.Priority)
+						{
+							list_of_nodes[index].f = Flags.Priority;
+							list_of_nodes[index].priority_value = list_of_nodes[index + 1].priority_value;
+						}
+
+					}
+				}
+
+            }
 			return list_of_nodes;
 		}
 	}
