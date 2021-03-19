@@ -18,8 +18,8 @@ namespace Athena_Engine
             rules.Add(r2);
             Func<Node, Node, Node> r3 = ThirdRule;
             rules.Add(r3);
-            Func<Node, Node, Node> r4 = ForthRule;
-            rules.Add(r4);
+            //Func<Node, Node, Node> r4 = ForthRule;
+            //rules.Add(r4);
             Func<Node, Node, Node> r45 = ForthHalfRule;
             rules.Add(r45);
             Func<Node, Node, Node> r5 = FifthRule;

@@ -22,7 +22,7 @@ namespace Tests
 
                 Node actual = simp.Simplify(p.Parse(t.Tokenize("x^" + exponent1.ToString() + "*x^" + exponent2.ToString())));
                 Node expected = p.Parse(t.Tokenize("x^" + (exponent1 + exponent2).ToString()));
-                Assert.IsTrue(expected == actual);
+                Assert.AreEqual(actual, expected);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Tests
 
                 Node actual = simp.Simplify(p.Parse(t.Tokenize("x^" + exponent1.ToString() + "/x^" + exponent2.ToString())));
                 Node expected = p.Parse(t.Tokenize("x^" + (exponent1 - exponent2).ToString()));
-                Assert.IsTrue(expected == actual);
+                Assert.AreEqual(actual, expected);
             }
         }
 
@@ -51,8 +51,25 @@ namespace Tests
                 int coeficient2 = r.Next(1, 10000000);
 
                 Node actual = simp.Simplify(p.Parse(t.Tokenize("(" + coeficient1.ToString()+"*x^" + exponent1.ToString() + ")/("+ coeficient2 + "*x^" + exponent2.ToString() + ")")));
-                Node expected = simp.Simplify(p.Parse(t.Tokenize("(" +coeficient1+ "/" +coeficient2.ToString()+")*x^" + (exponent1 - exponent2).ToString())));
-                Assert.IsTrue(expected == actual);
+                Node expected = simp.Simplify(p.Parse(t.Tokenize("(" +coeficient1.ToString()+ "/" +coeficient2.ToString()+")*x^" + (exponent1 - exponent2).ToString())));
+                Assert.AreEqual(actual, expected);
+            }
+        }
+
+        [TestMethod]
+        public void ForthHalfTestingMultiplication1()
+        {
+            for (int i = 0; i <= 100000; i++)
+            {
+                int exponent1 = r.Next(1, 10000000);
+                int exponent2 = r.Next(1, 10000000);
+                int coeficient1 = r.Next(1, 10000000);
+                int coeficient2 = r.Next(1, 10000000);
+
+                Node actual = p.Parse(t.Tokenize("(" + coeficient1.ToString() + "*x^" + exponent1.ToString() + ")*(" + coeficient2 + "*x^" + exponent2.ToString() + ")"));
+                actual = simp.Simplify(actual);
+                Node expected = simp.Simplify(p.Parse(t.Tokenize("(" + coeficient1.ToString() + "*" + coeficient2.ToString() + ")*x^" + (exponent1 + exponent2).ToString())));
+                Assert.AreEqual(actual, expected);
             }
         }
     }

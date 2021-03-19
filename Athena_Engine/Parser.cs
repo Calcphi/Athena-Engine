@@ -118,7 +118,7 @@ namespace Athena_Engine
             List<Node> node_split2 = new List<Node>();
             for (int i = 0; i <= (nodes.Count - 1); i++)
             {
-                if (i < low_priority_index)
+                if (i < (low_priority_index))
                 {
                     node_split1.Add(nodes[i]);
                 }
