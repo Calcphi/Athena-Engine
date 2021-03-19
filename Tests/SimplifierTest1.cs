@@ -15,7 +15,7 @@ namespace Tests
         [TestMethod]
         public void FifthRuleTestingMultiplication1()
         {
-            for(int i = 0; i <= 1000; i++)
+            for(int i = 0; i <= 100000; i++)
             {
                 int exponent1 = r.Next(1, 10000000);
                 int exponent2 = r.Next(1, 10000000);
@@ -29,13 +29,29 @@ namespace Tests
         [TestMethod]
         public void FifthRuleTestingDivision1()
         {
-            for (int i = 0; i <= 1000; i++)
+            for (int i = 0; i <= 100000; i++)
             {
                 int exponent1 = r.Next(1, 10000000);
                 int exponent2 = r.Next(1, 10000000);
 
                 Node actual = simp.Simplify(p.Parse(t.Tokenize("x^" + exponent1.ToString() + "/x^" + exponent2.ToString())));
                 Node expected = p.Parse(t.Tokenize("x^" + (exponent1 - exponent2).ToString()));
+                Assert.IsTrue(expected == actual);
+            }
+        }
+
+        [TestMethod]
+        public void ForthHalfTestingDivision1()
+        {
+            for (int i = 0; i <= 100000; i++)
+            {
+                int exponent1 = r.Next(1, 10000000);
+                int exponent2 = r.Next(1, 10000000);
+                int coeficient1 = r.Next(1, 10000000);
+                int coeficient2 = r.Next(1, 10000000);
+
+                Node actual = simp.Simplify(p.Parse(t.Tokenize("(" + coeficient1.ToString()+"*x^" + exponent1.ToString() + ")/("+ coeficient2 + "*x^" + exponent2.ToString() + ")")));
+                Node expected = simp.Simplify(p.Parse(t.Tokenize("(" +coeficient1+ "/" +coeficient2.ToString()+")*x^" + (exponent1 - exponent2).ToString())));
                 Assert.IsTrue(expected == actual);
             }
         }
