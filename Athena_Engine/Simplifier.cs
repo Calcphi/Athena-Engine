@@ -746,7 +746,55 @@ namespace Athena_Engine
                 return terms;
             }
 
+            List<(Node, double)> AddNumbersIfPossible(List<(Node, double)> listnodes)
+            {
+                //First we will get all numbers in the list
+                List<(Node, double)> listnumbers = new List<(Node, double)>();
+                foreach ((Node numberspog, double degree) in listnodes)
+                {
+                    if(degree == 0)
+                    {
+                        listnumbers.Add((numberspog, degree));
+                    }
+                }
+                if(listnumbers.Count <= 1)
+                {
+                    return listnodes;
+                }
+                List<(Node, double)> usednumbers = new List<(Node, double)>();
+                for(int i = 0; i <= (listnumbers.Count - 1); i++)
+                {
+                    if (usednumbers.Contains(listnumbers[i]))
+                    {
+                        continue;
+                    }
+                    for(int e = 0; e<= (listnumbers.Count - 1); e++)
+                    {
+                        if(i == e)
+                        {
+                            continue;
+                        }
+                        if (usednumbers.Contains(listnumbers[e]))
+                        {
+                            continue;
+                        }
+                        Node n1_value = listnumbers[i].Item1;
+                        Node n2_value = listnumbers[e].Item1;
+                        if (n1_value.t == Types.Double && n2_value.t == Types.Double)
+                        {
+                            usednumbers.Add(listnumbers[i]);
+                            usednumbers.Add(listnumbers[e]);
+                            listnodes.Remove(listnumbers[i]);
+                            listnodes.Remove(listnumbers[e]);
 
+                            n1_value.value += n2_value.value;
+                            listnodes.Add((n1_value, 0));
+                        }
+                        
+                    }
+                }
+                return listnodes;
+            }
 
             Node WriteInCanonicalOrder(Node origin, int plus_used, int plus_max, List<(Node nn, double i)> node_list)
             {
@@ -792,7 +840,8 @@ namespace Athena_Engine
                         while (true)
                         {
                             organized_list = AddVariablesIfPossible(organized_list);
-                            if(organized_list == old_organized_list)
+                            organized_list = AddNumbersIfPossible(organized_list);
+                            if(organized_list.Count == old_organized_list.Count)
                             {
                                 break;
                             }
@@ -875,6 +924,11 @@ namespace Athena_Engine
                 if(n.exp[1].t == Types.Double && n.exp[1].value == 0)
                 {
                     return n.exp[0];
+                }
+                if(n.exp[1].t == Types.Double && n.exp[1].value < 0)
+                {
+                    n.op = Operators.Subtraction;
+                    n.exp[1].value = Math.Abs(n.exp[1].value);
                 }
             }
             return n;
