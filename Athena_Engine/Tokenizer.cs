@@ -248,15 +248,19 @@ namespace Athena_Engine {
 				}
                 catch (ArgumentOutOfRangeException) //if variable is on the right check on the left
                 {
-					if (list_of_nodes[index + 1].t == Types.Operator)
-					{
-						if (list_of_nodes[index + 1].f == Flags.Priority)
+                    try
+                    {
+						if (list_of_nodes[index + 1].t == Types.Operator)
 						{
-							list_of_nodes[index].f = Flags.Priority;
-							list_of_nodes[index].priority_value = list_of_nodes[index + 1].priority_value;
-						}
+							if (list_of_nodes[index + 1].f == Flags.Priority)
+							{
+								list_of_nodes[index].f = Flags.Priority;
+								list_of_nodes[index].priority_value = list_of_nodes[index + 1].priority_value;
+							}
 
+						}
 					}
+                    catch (ArgumentOutOfRangeException) { }
 				}
 
             }
