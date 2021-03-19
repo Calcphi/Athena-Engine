@@ -42,7 +42,19 @@ namespace Athena_Engine
 
         }
 
-        public Node GetLowestPriorityNode(List<Node> node_list)
+        private int FindNodeIndex(List<Node> node_list, Node n)
+        {
+            for (int i = 0; i <= (node_list.Count - 1); i++)
+            {
+                if (node_list[i] == n)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public Node GetLowestPriorityNode(in List<Node> node_list)
         {
             List<Node> newlist = node_list;
             Node n1 = node_list[0];
@@ -57,35 +69,35 @@ namespace Athena_Engine
             //if both have a priority level but they are different
             if (n1.f == Flags.Priority && n2.f == Flags.Priority && n1.priority_value > n2.priority_value)
             {
-                newlist.Remove(n1);
+                newlist.RemoveAt(FindNodeIndex(newlist, n1));
             }
             else if (n1.f == Flags.Priority && n2.f == Flags.Priority && n1.priority_value < n2.priority_value)
             {
-                newlist.Remove(n2);
+                newlist.RemoveAt(FindNodeIndex(newlist, n2));
             }
             else if (n1.f == Flags.Priority && n2.f == Flags.None) //conditions if one has a priority flag and the other doesn't
             {
-                newlist.Remove(n1);
+                newlist.RemoveAt(FindNodeIndex(newlist, n1));
             }
             else if (n2.f == Flags.Priority && n1.f == Flags.None)
             {
-                newlist.Remove(n2);
+                newlist.RemoveAt(FindNodeIndex(newlist, n2));
             }
             else if (n1.op == n2.op) //if they are the same type remove the left one
             {
-                newlist.Remove(n1);
+                newlist.RemoveAt(FindNodeIndex(newlist, n1));
             }
             else if (op1 == op2) //if they have the same weight remove the one on the left
             {
-                newlist.Remove(n1);
+                newlist.RemoveAt(FindNodeIndex(newlist, n1));
             }
             else if (op1 > op2) //remove if the left operator has more weight
             {
-                newlist.Remove(n1);
+                newlist.RemoveAt(FindNodeIndex(newlist, n1));
             }
             else if (op1 < op2) //remove if the right operator has more weight
             {
-                newlist.Remove(n2);
+                newlist.RemoveAt(FindNodeIndex(newlist, n2));
             }
             return GetLowestPriorityNode(newlist);
         }
